@@ -8,6 +8,7 @@ public class Jadwal {
     public Jadwal(String idJadwal, Kelas kelas, String tanggalMulai) {
         this.idJadwal = idJadwal;
         this.kelas = kelas;
+        
         this.tanggalMulai = tanggalMulai;
     }
 
