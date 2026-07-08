@@ -70,6 +70,81 @@ public class KelasDAO {
 
     public boolean ubahHarga(String idKelas, int hargaBaru){
         return false;
+    }
 
+    String generateId(){
+        Connection conn = Koneksi.getKoneksi();
+        String id = "";
+        try {
+            String sql = "SELECT MAX(id_kelas) as max_id FROM kelas";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                id = rs.getString("max_id");
+                if (id == null) {
+                    id = "K001";
+                } else {
+                    int nomorUrut = Integer.parseInt(id.substring(1)) + 1;
+                    id = String.format("K%03d", nomorUrut);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return id;
+    }
+
+    /**
+     * Generate ID dengan format "BC-BOL-01".
+     * - "BC" adalah prefix tetap.
+     * - "BOL" adalah 3 karakter awal dari `namaKelas` (spasi dihapus, uppercase).
+     * - "01" adalah nomor urut dua digit yang selalu bertambah untuk kombinasi BOL.
+     */
+    public String generateId(String namaKelas){
+        Connection conn = Koneksi.getKoneksi();
+        String id = "";
+        try {
+            String clean = namaKelas == null ? "" : namaKelas.trim().replaceAll("\\s+", "").toUpperCase();
+            String bol = clean.length() >= 3 ? clean.substring(0,3) : clean;
+            if (bol.isEmpty()) bol = "XXX";
+            String prefix = "BC-" + bol + "-";
+
+            String sql = "SELECT MAX(id_kelas) as max_id FROM kelas WHERE id_kelas LIKE ?";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, prefix + "%");
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                String max = rs.getString("max_id");
+                if (max == null) {
+                    id = prefix + String.format("%02d", 1);
+                } else {
+                    int lastDash = max.lastIndexOf('-');
+                    String numStr = lastDash >= 0 ? max.substring(lastDash + 1) : "0";
+                    int next = Integer.parseInt(numStr) + 1;
+                    id = prefix + String.format("%02d", next);
+                }
+            } else {
+                id = prefix + String.format("%02d", 1);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return id;
+    }
+
+    public void tambahKelas(Kelas kelas){
+        Connection conn = Koneksi.getKoneksi();
+        try {
+            String sql = "INSERT INTO kelas ( id_kelas, nama_kelas, harga, kapasitas) VALUES (?, ?, ?, ?)";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, kelas.getIdKelas());
+            ps.setString(2, kelas.getNamaKelas());
+            ps.setDouble(3, kelas.getHarga());
+            ps.setInt(4, kelas.getKapasitas());
+            ps.executeUpdate();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 }

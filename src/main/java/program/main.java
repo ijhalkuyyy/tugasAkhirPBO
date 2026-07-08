@@ -3,10 +3,10 @@ package program;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 
-public class main {
+public class Main {
 
     static PesertaDAO pesertaDAO = new PesertaDAO();
-    // static KelasDAO kelasDAO = new KelasDAO();
+    static KelasDAO kelasDAO = new KelasDAO();
     // static JadwalDAO jadwalDAO = new JadwalDAO();
     // static BookingDAO bookingDAO = new BookingDAO();
 
@@ -23,8 +23,8 @@ public class main {
                         "1. Input Data Peserta\n" +
                         "2. Tampil Data Peserta\n" +
                         "3. Cari Data Peserta ID\n" +
-                        "4. Data Transaksi\n" +
-                        "5. Data Peserta  \n" +
+                        "4. Tampil Data Kelas\n" +
+                        "5. Tambah Kelas\n" +
                         "6. Laporan Peserta\n" +
                         "7. Keluar\n\n" +
                         "Pilihan : "
@@ -49,17 +49,23 @@ public class main {
                 case 1: inputDataPeserta(); break;
                 case 2: tampilDataPeserta(); break;
                 case 3: cariDataPesertaBerdasarkanID(); break;
-                // case 3: inputDataKaryawan(); break;
-                // case 4: cetakLaporanMahasiswa(); break;
-                // case 5: cetakLaporanDosen(); break;
+                case 4: tampilDataKelas(); break;
+                case 5: tambahKelas(); break;
                 //case 5: inputPeserta(); break;
                 //case 6: lapPeserta(); break;
                 case 7: running = false; break;
             }
         } while(running);
-
     }
+    // public static void Main(String[] args) {
+        
 
+    // }
+
+
+
+
+    // MENU PESERTA
     static void tampilDataPeserta() {
         String dataPeserta = pesertaDAO.tampilSemuaPeserta();
         if(dataPeserta.isEmpty()) {
@@ -100,5 +106,53 @@ public class main {
             JOptionPane.showMessageDialog(null, "Peserta tidak ditemukan.");
         }
     }
+
+
+
+    // MENU KELAS
+    static void tampilDataKelas() {
+        String dataKelas = kelasDAO.tampilSemuaKelas();
+        if(dataKelas.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Tidak ada data kelas.");
+        }else {
+            JTextArea textArea = new JTextArea(dataKelas);
+            textArea.setEditable(false);
+            JOptionPane.showMessageDialog(null, textArea, "Data Kelas", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    static void ubahHargaKelas() {
+        String idKelas = JOptionPane.showInputDialog("Masukkan ID Kelas:");
+        String hargaBaruStr = JOptionPane.showInputDialog("Masukkan Harga Baru:");
+        int hargaBaru = Integer.parseInt(hargaBaruStr);
+        boolean berhasil = kelasDAO.ubahHarga(idKelas, hargaBaru);
+        if (berhasil) {
+            JOptionPane.showMessageDialog(null, "Harga kelas berhasil diubah.");
+        } else {
+            JOptionPane.showMessageDialog(null, "Gagal mengubah harga kelas.");
+        }
+    }
+    
+
+    static void tambahKelas() {
+        String namaKelas = JOptionPane.showInputDialog("Masukkan Nama Kelas:");
+        String hargaStr = JOptionPane.showInputDialog("Masukkan Harga Kelas:");
+        double harga = Double.parseDouble(hargaStr);
+        String kapasitasStr = JOptionPane.showInputDialog("Masukkan Kapasitas Kelas:");
+        int kapasitas = Integer.parseInt(kapasitasStr);
+
+        Kelas kelas = new Kelas(kelasDAO.generateId(), namaKelas, harga, kapasitas);
+        kelasDAO.tambahKelas(kelas);
+    }
+
+
+
+
+
+
+
+
+
+
 }
 
