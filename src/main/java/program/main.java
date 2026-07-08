@@ -1,6 +1,11 @@
 package program;
 
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
+
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 public class Main {
@@ -20,12 +25,14 @@ public class Main {
                 try {
                     String inputMenu = JOptionPane.showInputDialog(
                         "MENU SISTEM\n\n" +
+                        "========Peserta========\n" +
                         "1. Input Data Peserta\n" +
                         "2. Tampil Data Peserta\n" +
                         "3. Cari Data Peserta ID\n" +
-                        "4. Tampil Data Kelas\n" +
-                        "5. Tambah Kelas\n" +
-                        "6. Laporan Peserta\n" +
+                        "========Kelas========\n" +
+                        "4. Input Kelas\n" +
+                        "5. Tampil Data Kelas\n" +
+                        "6. Ubah Harga Kelas\n" +
                         "7. Keluar\n\n" +
                         "Pilihan : "
                     );
@@ -49,9 +56,9 @@ public class Main {
                 case 1: inputDataPeserta(); break;
                 case 2: tampilDataPeserta(); break;
                 case 3: cariDataPesertaBerdasarkanID(); break;
-                case 4: tampilDataKelas(); break;
-                case 5: tambahKelas(); break;
-                //case 5: inputPeserta(); break;
+                case 4: tambahKelas(); break;
+                case 5: tampilDataKelas(); break;
+                case 6: ubahHargaKelas(); break;
                 //case 6: lapPeserta(); break;
                 case 7: running = false; break;
             }
@@ -89,7 +96,7 @@ public class Main {
             }
         } while (noHp == null || noHp.length() < 10 || noHp.length() > 13);
 
-        Peserta peserta = new Peserta(pesertaDAO.generateId(), namaLengkap, namaPanggilan, noHp);
+        Peserta peserta = new Peserta(pesertaDAO.generateIdPeserta(), namaLengkap, namaPanggilan, noHp);
         pesertaDAO.tambahPeserta(peserta);
     }
 
@@ -122,17 +129,51 @@ public class Main {
     }
 
     static void ubahHargaKelas() {
-        String idKelas = JOptionPane.showInputDialog("Masukkan ID Kelas:");
-        String hargaBaruStr = JOptionPane.showInputDialog("Masukkan Harga Baru:");
-        int hargaBaru = Integer.parseInt(hargaBaruStr);
-        boolean berhasil = kelasDAO.ubahHarga(idKelas, hargaBaru);
-        if (berhasil) {
-            JOptionPane.showMessageDialog(null, "Harga kelas berhasil diubah.");
-        } else {
-            JOptionPane.showMessageDialog(null, "Gagal mengubah harga kelas.");
+        String dataKelas = kelasDAO.tampilSemuaKelas();
+        
+        if (dataKelas.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Belum ada data kelas yang bisa diubah harganya.");
+            return;
+        }
+
+        JTextArea textArea = new JTextArea(dataKelas);
+        textArea.setEditable(false);
+        textArea.setFont(new Font("Monospaced", Font.PLAIN, 14)); 
+        textArea.setMargin(new Insets(10, 10, 10, 10));
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        scrollPane.setPreferredSize(new Dimension(600, 300));
+
+        Object[] tampilanPesan = {
+            "Daftar Kelas Tersedia:", 
+            scrollPane, 
+            "\nMasukkan ID Kelas yang harganya ingin diubah:"
+        };
+
+        String idKelas = JOptionPane.showInputDialog(null, tampilanPesan, "Ubah Harga Kelas", JOptionPane.PLAIN_MESSAGE);
+        
+        if (idKelas == null || idKelas.trim().isEmpty()) {
+            return;
+        }
+
+        String hargaBaruStr = JOptionPane.showInputDialog("Masukkan Harga Baru untuk Kelas " + idKelas + ":");
+        
+        if (hargaBaruStr == null || hargaBaruStr.trim().isEmpty()) {
+            return; 
+        }
+
+        try {
+            int hargaBaru = Integer.parseInt(hargaBaruStr);
+            boolean berhasil = kelasDAO.ubahHarga(idKelas, hargaBaru);
+            
+            if (berhasil) {
+                JOptionPane.showMessageDialog(null, "Harga kelas " + idKelas + " berhasil diubah menjadi " + hargaBaru + ".");
+            } else {
+                JOptionPane.showMessageDialog(null, "Gagal mengubah harga! Pastikan ID Kelas (" + idKelas + ") benar dan ada di daftar.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Error: Harga baru harus berupa angka!", "Input Tidak Valid", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
 
     static void tambahKelas() {
         String namaKelas = JOptionPane.showInputDialog("Masukkan Nama Kelas:");
@@ -141,7 +182,7 @@ public class Main {
         String kapasitasStr = JOptionPane.showInputDialog("Masukkan Kapasitas Kelas:");
         int kapasitas = Integer.parseInt(kapasitasStr);
 
-        Kelas kelas = new Kelas(kelasDAO.generateId(), namaKelas, harga, kapasitas);
+        Kelas kelas = new Kelas(kelasDAO.generateId(namaKelas), namaKelas, harga, kapasitas);
         kelasDAO.tambahKelas(kelas);
     }
 
