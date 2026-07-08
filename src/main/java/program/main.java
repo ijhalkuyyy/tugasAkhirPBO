@@ -3,7 +3,10 @@ package program;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -12,7 +15,7 @@ public class Main {
 
     static PesertaDAO pesertaDAO = new PesertaDAO();
     static KelasDAO kelasDAO = new KelasDAO();
-    // static JadwalDAO jadwalDAO = new JadwalDAO();
+    static JadwalDAO jadwaldao = new JadwalDAO();
     // static BookingDAO bookingDAO = new BookingDAO();
 
 
@@ -34,6 +37,11 @@ public class Main {
                         "5. Tampil Data Kelas\n" +
                         "6. Ubah Harga Kelas\n" +
                         "7. Keluar\n\n" +
+                        "========JADWAL========\n" +
+                        "8. Input tambah Jadwal\n" +
+                        "9. Tampil Data Jadwal\n" +
+                        "10. Ubah Jadwal\n" +
+                        "11. Keluar\n\n" +
                         "Pilihan : "
                     );
 
@@ -42,10 +50,10 @@ public class Main {
                     }
 
                     pilih = Integer.parseInt(inputMenu);
-                    if (pilih >= 1 && pilih <= 7) {
+                    if (pilih >= 1 && pilih <= 11) {
                         putar = false;
                     } else {
-                        JOptionPane.showMessageDialog(null, "Masukkan pilihan 1-7.");
+                        JOptionPane.showMessageDialog(null, "Masukkan pilihan 1-11.");
                     }
                 } catch (NumberFormatException e) {
                     JOptionPane.showMessageDialog(null, "Masukkan angka yang valid!");
@@ -61,6 +69,10 @@ public class Main {
                 case 6: ubahHargaKelas(); break;
                 //case 6: lapPeserta(); break;
                 case 7: running = false; break;
+                case 8: inputDataJadwal(); break;
+                case 9: tampilDataJadwal(); break;
+                case 10: ubahJadwal(); break;
+                case 11: running = false; break;
             }
         } while(running);
     }
@@ -188,6 +200,119 @@ public class Main {
 
 
 
+
+    // MENU JADWAL
+    static void tampilDataJadwal() {
+        String dataJadwal = jadwaldao.tampilSemuaJadwal();
+        if(dataJadwal.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Tidak ada data jadwal.");
+        }else {
+            JTextArea textArea = new JTextArea(dataJadwal);
+            textArea.setEditable(false);
+            JOptionPane.showMessageDialog(null, textArea, "Data Jadwal", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+
+    static void inputDataJadwal() {
+        List<Kelas> daftarKelas = kelasDAO.ambilSemuaKelasObjek();
+        if (daftarKelas.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Belum ada data kelas yang tersedia.");
+            return;
+        }
+
+        List<String> opsiKelas = new ArrayList<>();
+        for (Kelas kelas : daftarKelas) {
+            opsiKelas.add(kelas.getIdKelas() + " - " + kelas.getNamaKelas());
+        }
+
+        JComboBox<String> comboBoxKelas = new JComboBox<>(opsiKelas.toArray(String[]::new));
+        int pilih = JOptionPane.showConfirmDialog(
+            null,
+            comboBoxKelas,
+            "Pilih Kelas",
+            JOptionPane.OK_CANCEL_OPTION,
+            JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (pilih != JOptionPane.OK_OPTION) {
+            return;
+        }
+
+        String selectedValue = (String) comboBoxKelas.getSelectedItem();
+        String idKelas = selectedValue != null ? selectedValue.split(" - ")[0] : "";
+        Kelas kelas = kelasDAO.cariById(idKelas);
+        if (kelas == null) {
+            JOptionPane.showMessageDialog(null, "Kelas dengan ID tersebut tidak ditemukan.");
+            return;
+        }
+
+        String tanggalMulai = JOptionPane.showInputDialog("Masukkan Tanggal Mulai (YYYY-MM-DD):");
+        String tanggalSelesai = JOptionPane.showInputDialog("Masukkan Tanggal Selesai (YYYY-MM-DD):");
+        int sesi = jadwaldao.generateSesi(kelas.getIdKelas());
+
+        Jadwal jadwal = new Jadwal(jadwaldao.generateIdJadwal(), kelas, tanggalMulai, tanggalSelesai, sesi);
+        jadwaldao.tambahJadwal(jadwal);
+    }
+
+    static void ubahJadwal() {
+        List<String> daftarJadwal = jadwaldao.ambilSemuaJadwalDropdown();
+        if (daftarJadwal.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Belum ada data jadwal yang bisa diubah.");
+            return;
+        }
+
+        JComboBox<String> comboBoxJadwal = new JComboBox<>(daftarJadwal.toArray(String[]::new));
+        int pilihJadwal = JOptionPane.showConfirmDialog(
+            null,
+            comboBoxJadwal,
+            "Pilih Jadwal",
+            JOptionPane.OK_CANCEL_OPTION,
+            JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (pilihJadwal != JOptionPane.OK_OPTION) {
+            return;
+        }
+
+        String selectedJadwal = (String) comboBoxJadwal.getSelectedItem();
+        String idJadwal = selectedJadwal != null ? selectedJadwal.split(" - ")[0] : "";
+
+        String[] opsiField = {"Tanggal Mulai", "Tanggal Selesai"};
+        JComboBox<String> comboBoxField = new JComboBox<>(opsiField);
+        int pilihField = JOptionPane.showConfirmDialog(
+            null,
+            comboBoxField,
+            "Pilih Data yang ingin diubah",
+            JOptionPane.OK_CANCEL_OPTION,
+            JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (pilihField != JOptionPane.OK_OPTION) {
+            return;
+        }
+
+        Object selectedField = comboBoxField.getSelectedItem();
+        String fieldDb = selectedField != null && selectedField.equals("Tanggal Mulai")
+                ? "tanggal_mulai"
+                : "tanggal_selesai";
+        String tanggalBaru = JOptionPane.showInputDialog("Masukkan tanggal baru (YYYY-MM-DD):");
+
+        if (tanggalBaru == null || tanggalBaru.trim().isEmpty()) {
+            return;
+        }
+
+        boolean berhasil = jadwaldao.ubahJadwal(idJadwal, fieldDb, tanggalBaru);
+        if (berhasil) {
+            JOptionPane.showMessageDialog(null, "Jadwal berhasil diubah.");
+        } else {
+            JOptionPane.showMessageDialog(null, "Gagal mengubah jadwal.");
+        }
+    }
+
+
+
+    
 
 
 
