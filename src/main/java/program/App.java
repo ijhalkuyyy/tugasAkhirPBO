@@ -11,7 +11,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-public class Main {
+public class App {
 
     static PesertaDAO pesertaDAO = new PesertaDAO();
     static KelasDAO kelasDAO = new KelasDAO();
