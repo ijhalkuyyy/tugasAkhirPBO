@@ -101,6 +101,12 @@ public class BookingUI {
             return;
         }
 
+        boolean sudahAda = bookingDAO.cekBookingDuplikat(pesertaTerpilih.getId(), jadwalTerpilih.getId());
+        if (sudahAda) {
+            JOptionPane.showMessageDialog(null, "Data tidak ditambah karena peserta sudah pernah mendaftar kelas dan jadwal yang sama.");
+            return;
+        }
+
         String idBooking = bookingDAO.generateIdBooking();
         Booking booking = new Booking(
                 idBooking,
@@ -174,12 +180,65 @@ public class BookingUI {
         JOptionPane.showMessageDialog(null, scrollPane, judul, JOptionPane.INFORMATION_MESSAGE);
     }
 
-    void ubahStatusPembayaran(String idBooking) {
-        boolean berhasil = bookingDAO.ubahStatusPembayaran(idBooking);
+    public void ubahStatusPembayaran() {
+        String dataBooking = bookingDAO.tampilSemuaTransaksi();
+        if (dataBooking.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Belum ada data booking.");
+            return;
+        }
+
+        List<Booking> daftarBooking = bookingDAO.ambilSemuaBookingObjek();
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+
+        JTextArea textArea = new JTextArea(dataBooking);
+        textArea.setEditable(false);
+        textArea.setFont(new Font("Monospaced", Font.PLAIN, 13));
+        textArea.setMargin(new Insets(8, 8, 8, 8));
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        scrollPane.setPreferredSize(new Dimension(700, 220));
+
+        panel.add(new JLabel("Data Booking:"));
+        panel.add(Box.createVerticalStrut(6));
+        panel.add(scrollPane);
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(new JLabel("Pilih ID booking yang ingin diubah status pembayarannya:"));
+
+        JComboBox<ComboItem> comboBooking = new JComboBox<>();
+        for (Booking booking : daftarBooking) {
+            if (!"DP 50%".equalsIgnoreCase(booking.getStatusPembayaran())) {
+                continue;
+            }
+            comboBooking.addItem(new ComboItem(
+                    booking.getIdBooking(),
+                    booking.getIdBooking() + " - " + booking.getStatusPembayaran()
+            ));
+        }
+
+        if (comboBooking.getItemCount() == 0) {
+            JOptionPane.showMessageDialog(null, "Tidak ada booking dengan status DP 50%.");
+            return;
+        }
+
+        panel.add(comboBooking);
+
+        int hasil = JOptionPane.showConfirmDialog(null, panel, "Ubah Status Pembayaran", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        if (hasil != JOptionPane.OK_OPTION) {
+            return;
+        }
+
+        ComboItem bookingTerpilih = (ComboItem) comboBooking.getSelectedItem();
+        if (bookingTerpilih == null) {
+            JOptionPane.showMessageDialog(null, "Pilih booking terlebih dahulu.");
+            return;
+        }
+
+        boolean berhasil = bookingDAO.ubahStatusPembayaran(bookingTerpilih.getId());
         if (berhasil) {
-            JOptionPane.showMessageDialog(null, "Status pembayaran berhasil diubah.");
+            JOptionPane.showMessageDialog(null, "Status pembayaran berhasil diubah menjadi Lunas.");
         } else {
-            JOptionPane.showMessageDialog(null, "Gagal mengubah status pembayaran. ID Booking tidak ditemukan.");
+            JOptionPane.showMessageDialog(null, "Gagal mengubah status pembayaran.");
         }
     }
 }

@@ -33,7 +33,9 @@ public class App {
                         "9. Ubah Jadwal\n\n" +
                         "========BOOKING========\n" +
                         "10. Tambah Booking\n" +
-                        "11. Keluar\n\n" +
+                        "11. Ubah Status Pembayaran\n" +
+                        "12. Tampil Data Transaksi\n" +
+                        "13. Keluar\n\n" +
                         "Pilihan : "
                     );
 
@@ -42,10 +44,10 @@ public class App {
                     }
 
                     pilih = Integer.parseInt(inputMenu);
-                    if (pilih >= 1 && pilih <= 11) {
+                    if (pilih >= 1 && pilih <= 13) {
                         putar = false;
                     } else {
-                        JOptionPane.showMessageDialog(null, "Masukkan pilihan 1-11.");
+                        JOptionPane.showMessageDialog(null, "Masukkan pilihan 1-13.");
                     }
                 } catch (NumberFormatException e) {
                     JOptionPane.showMessageDialog(null, "Masukkan angka yang valid!");
@@ -63,7 +65,10 @@ public class App {
                 case 8: jadwalUI.tampilDataJadwal(); break;
                 case 9: jadwalUI.ubahJadwal(); break;
                 case 10: bookingUI.tambahBooking(); break;
-                case 11: running = false; break;
+                case 11: bookingUI.ubahStatusPembayaran(); break;
+                case 12: bookingUI.tampilDataTransaksi(); break;
+                case 13: running = false; break;
+                // case 12: running = false; break;
             }
         } while(running);
     }

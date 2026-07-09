@@ -3,6 +3,8 @@ package program;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BookingDAO {
     public String tampilSemuaTransaksi(){
@@ -18,7 +20,6 @@ public class BookingDAO {
                     k.nama_kelas,
                     j.id_jadwal,
                     j.tanggal_mulai,
-                    b.harga,
                     b.metode_pembayaran,
                     b.status_pembayaran
                 FROM booking b
@@ -36,7 +37,7 @@ public class BookingDAO {
             if (!rs.next()) {
                 return "";
             }
-            String format = "%-4s %-8s %-20s %-8s %-20s %-10s %-15s %-12s %-12s %-10s\n";
+            String format = "%-4s %-8s %-20s %-8s %-20s %-10s %-12s %-12s %-10s\n";
             hasil.append(String.format(format,
                     "NO",
                     "ID PST",
@@ -45,7 +46,6 @@ public class BookingDAO {
                     "NAMA KELAS",
                     "ID JWL",
                     "TGL MULAI",
-                    "HARGA",
                     "METODE",
                     "STATUS"));
 
@@ -60,7 +60,6 @@ public class BookingDAO {
                         rs.getString("nama_kelas"),
                         rs.getString("id_jadwal"),
                         rs.getString("tanggal_mulai"),
-                        rs.getDouble("harga"),
                         rs.getString("metode_pembayaran"),
                         rs.getString("status_pembayaran")
                 ));
@@ -71,6 +70,23 @@ public class BookingDAO {
         }
         return hasil.toString();
 
+    }
+
+    public boolean cekBookingDuplikat(String idPeserta, String idJadwal) {
+        Connection con = Koneksi.getKoneksi();
+        try {
+            String sql = "SELECT COUNT(*) AS total FROM booking WHERE id_peserta = ? AND id_jadwal = ?";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, idPeserta);
+            ps.setString(2, idJadwal);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("total") > 0;
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return false;
     }
 
     public boolean tambahBooking(Booking booking){
@@ -105,6 +121,32 @@ public class BookingDAO {
             return false;
 
         }
+    }
+
+    public List<Booking> ambilSemuaBookingObjek() {
+        List<Booking> daftarBooking = new ArrayList<>();
+        Connection con = Koneksi.getKoneksi();
+        try {
+            String sql = """
+                SELECT id_booking, id_peserta, id_jadwal, metode_pembayaran, status_pembayaran
+                FROM booking
+                ORDER BY id_booking DESC
+                """;
+            PreparedStatement ps = con.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                daftarBooking.add(new Booking(
+                        rs.getString("id_booking"),
+                        rs.getString("id_peserta"),
+                        rs.getString("id_jadwal"),
+                        rs.getString("metode_pembayaran"),
+                        rs.getString("status_pembayaran")
+                ));
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return daftarBooking;
     }
 
     public boolean ubahStatusPembayaran(String idBooking){

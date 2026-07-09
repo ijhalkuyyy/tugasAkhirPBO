@@ -144,7 +144,6 @@ public class PesertaDAO {
             if (rs.next()) {
 
                 peserta = new Peserta(
-
                         rs.getString("id_peserta"),
                         rs.getString("nama_lengkap"),
                         rs.getString("nama_panggilan"),
