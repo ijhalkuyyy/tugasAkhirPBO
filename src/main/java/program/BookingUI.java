@@ -99,6 +99,8 @@ public class BookingUI {
 
         ComboItem pesertaTerpilih = (ComboItem) comboPeserta.getSelectedItem();
         ComboItem jadwalTerpilih = (ComboItem) comboJadwal.getSelectedItem();
+        Jadwal jadwalDipilih = jadwalDAO.cariById(jadwalTerpilih.getId());
+        double hargaKelas = jadwalDipilih.getKelas().getHarga();
 
         if (pesertaTerpilih == null || jadwalTerpilih == null || jadwalTerpilih.getId().isEmpty()) {
             JOptionPane.showMessageDialog(null, "Pilih peserta dan jadwal terlebih dahulu.");
@@ -111,11 +113,19 @@ public class BookingUI {
             return;
         }
 
+        double hargaBayar;
+        if(comboStatusPembayaran.getSelectedItem().equals("Lunas")){
+            hargaBayar = hargaKelas;
+        }else{
+            hargaBayar = hargaKelas * 0.5;
+        }
+
         String idBooking = bookingDAO.generateIdBooking();
         Booking booking = new Booking(
                 idBooking,
                 pesertaTerpilih.getId(),
                 jadwalTerpilih.getId(),
+                hargaBayar,
                 (String) comboMetodePembayaran.getSelectedItem(),
                 (String) comboStatusPembayaran.getSelectedItem()
         );
@@ -180,7 +190,7 @@ public class BookingUI {
         textArea.setFont(new Font("Monospaced", Font.PLAIN, 14));
         textArea.setMargin(new Insets(10, 10, 10, 10));
         JScrollPane scrollPane = new JScrollPane(textArea);
-        scrollPane.setPreferredSize(new Dimension(900, 300));
+        scrollPane.setPreferredSize(new Dimension(1100, 300));
         JOptionPane.showMessageDialog(null, scrollPane, judul, JOptionPane.INFORMATION_MESSAGE);
     }
 

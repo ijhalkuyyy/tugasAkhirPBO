@@ -25,6 +25,7 @@ public class BookingDAO {
                     j.id_jadwal,
                     j.tanggal_mulai,
                     j.sesi_ke,
+                    b.harga,
                     b.metode_pembayaran,
                     b.status_pembayaran
                 FROM booking b
@@ -49,7 +50,7 @@ public class BookingDAO {
             if (!rs.next()) {
                 return "";
             }
-            String format = "%-4s %-12s %-20s %-28s %-12s %-12s %-10s\n";
+            String format = "%-4s %-12s %-20s %-28s %-12s %-12s %-12s %-10s\n";
             hasil.append(String.format(format,
                     "NO",
                     "ID BOOKING",
@@ -57,23 +58,24 @@ public class BookingDAO {
                     "NAMA PESERTA",
                     //"ID KLS",
                     "NAMA KELAS/SESI",
-                    //"ID JWL",
                     "TGL MULAI",
+                    "HARGA",
                     "METODE",
                     "STATUS"));
 
-            hasil.append("====================================================================================================\n");
+            hasil.append("================================================================================================================\n");
             int no = 1;
             do {
                 hasil.append(String.format(format,
                         no++,
                         rs.getString("id_booking"),
-                        //rs.getString("id_peserta"),
+                        //rs.getString("id_peserta"),2
                         rs.getString("nama_lengkap"),
                         //rs.getString("id_kelas"),
                         rs.getString("nama_kelas") + " (Sesi " + rs.getInt("sesi_ke") + ")",
                         //rs.getString("id_jadwal"),
                         rs.getString("tanggal_mulai"),
+                        String.format("%.0f", rs.getDouble("harga")),
                         rs.getString("metode_pembayaran"),
                         rs.getString("status_pembayaran")
                 ));
@@ -112,10 +114,11 @@ public class BookingDAO {
                 (id_booking,
                 id_peserta,
                 id_jadwal,
+                harga,
                 metode_pembayaran,
                 status_pembayaran)
 
-                VALUES (?,?,?,?,?)
+                VALUES (?,?,?,?,?,?)
                 """;
 
             PreparedStatement ps = con.prepareStatement(sql);
@@ -123,8 +126,9 @@ public class BookingDAO {
             ps.setString(1, booking.getIdBooking());
             ps.setString(2, booking.getIdPeserta());
             ps.setString(3, booking.getIdJadwal());
-            ps.setString(4, booking.getMetodePembayaran());
-            ps.setString(5, booking.getStatusPembayaran());
+            ps.setDouble(4, booking.getHarga());
+            ps.setString(5, booking.getMetodePembayaran());
+            ps.setString(6, booking.getStatusPembayaran());
 
             return ps.executeUpdate() > 0;
 
@@ -142,7 +146,7 @@ public class BookingDAO {
         Connection con = Koneksi.getKoneksi();
         try {
             String sql = """
-                SELECT id_booking, id_peserta, id_jadwal, metode_pembayaran, status_pembayaran
+                SELECT id_booking, id_peserta, id_jadwal, harga, metode_pembayaran, status_pembayaran
                 FROM booking
                 ORDER BY id_booking DESC
                 """;
@@ -153,6 +157,7 @@ public class BookingDAO {
                         rs.getString("id_booking"),
                         rs.getString("id_peserta"),
                         rs.getString("id_jadwal"),
+                        rs.getDouble("harga"),
                         rs.getString("metode_pembayaran"),
                         rs.getString("status_pembayaran")
                 ));

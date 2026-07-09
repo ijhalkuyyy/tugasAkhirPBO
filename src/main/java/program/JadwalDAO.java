@@ -6,95 +6,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-// public class JadwalDAO {
-//     public String tampilSemuaJadwal(){
-//         Connection con = Koneksi.getKoneksi();
-//         StringBuilder hasil = new StringBuilder();
-//         try {
-//             String sql = "SELECT * FROM jadwal order by id_jadwal desc";
-//             PreparedStatement ps = con.prepareStatement(sql);
-//             ResultSet rs = ps.executeQuery();
-
-//             if (!rs.next()) {
-//                 return "";
-//             }
-
-//             String formatKolom = "%-12s %-20s %-15s %-12s\n";
-
-//             hasil.append(String.format(formatKolom, "ID", "NAMA", "HARGA", "KAPASITAS"));
-//             hasil.append("===============================================================\n");
-
-//             do {
-//                 hasil.append(String.format(formatKolom,
-//                 rs.getString("id_jadwal"),
-//                 rs.getString("nama_kelas"),
-//                 rs.getString("harga"),
-//                 rs.getString("kapasitas")));
-//             } while (rs.next());
-
-//         } catch (Exception e) {
-//             hasil.append("Error: ").append(e.getMessage());
-//         }
-//         return hasil.toString();
-//     }
-
-//     String geStringenerateIdJadwal() {
-//         Connection con = Koneksi.getKoneksi();
-//         String id = "";
-//         try {
-//             String sql = "SELECT MAX(id_jadwal) AS max_id FROM jadwal";
-//             PreparedStatement ps = con.prepareStatement(sql);
-//             ResultSet rs = ps.executeQuery();
-
-//             if (rs.next()) {
-//                 String maxId = rs.getString("max_id");
-//                 if (maxId != null) {
-//                     int nextId = Integer.parseInt(maxId.substring(1)) + 1;
-//                     id = String.format("J%03d", nextId);
-//                 } else {
-//                     id = "J001";
-//                 }
-//             }
-//         } catch (Exception e) {
-//             System.out.println(e.getMessage());
-//         }
-//         return id;
-//     }
-
-//     public String tampilJadwalPerKelas(String idKelas){
-//         return null;
-
-//     }
-
-//     // public boolean tambahJadwal(Jadwal jadwal){
-//     //     Kelas kelas = jadwal.getKelas();
-//     //     Connection con = Koneksi.getKoneksi();
-//     //     try {
-//     //         String sql = "INSERT INTO jadwal (id_jadwal, nama_kelas, harga, kapasitas) VALUES (?, ?, ?, ?)";
-//     //         PreparedStatement ps = con.prepareStatement(sql);
-//     //         ps.setString(1, jadwal.getIdJadwal());
-//     //         ps.setString(2, kelas.getNamaKelas());
-//     //         ps.setDouble(3, kelas.getHarga());
-//     //         ps.setInt(4, jadwal.getKapasitas());
-//     //         ps.executeUpdate();
-//     //         return true;
-//     //     } catch (Exception e) {
-//     //         System.out.println(e.getMessage());
-//     //         return false;
-//     //     }
-
-//     // }
-
-//     public String generateIdJadwal(){
-//         return null;
-//     }
-// }
-
-
-
-
-
-
 class JadwalDAO{
 
     public String tampilSemuaJadwal() {
@@ -293,79 +204,79 @@ class JadwalDAO{
 
     public String generateIdJadwal() {
 
-    Connection con = Koneksi.getKoneksi();
+        Connection con = Koneksi.getKoneksi();
 
-    String id = "JWL-01";
+        String id = "JWL-01";
 
-    try {
-        String sql = "SELECT MAX(id_jadwal) AS max_id FROM jadwal";
-        PreparedStatement ps = con.prepareStatement(sql);
+        try {
+            String sql = "SELECT MAX(id_jadwal) AS max_id FROM jadwal";
+            PreparedStatement ps = con.prepareStatement(sql);
 
-        ResultSet rs = ps.executeQuery();
+            ResultSet rs = ps.executeQuery();
 
-        if (rs.next()) {
+            if (rs.next()) {
 
-            String maxId = rs.getString("max_id");
+                String maxId = rs.getString("max_id");
 
-            if (maxId != null) {
+                if (maxId != null) {
 
-                int angka = Integer.parseInt(maxId.substring(4));
+                    int angka = Integer.parseInt(maxId.substring(4));
 
-                angka++;
+                    angka++;
 
-                id = "JWL-" + String.format("%02d", angka);
+                    id = "JWL-" + String.format("%02d", angka);
+
+                }
 
             }
 
+        } catch (Exception e) {
+
+            System.out.println(e.getMessage());
+
         }
 
-    } catch (Exception e) {
-
-        System.out.println(e.getMessage());
-
-    }
-
-        return id;
+            return id;
 
     }
 
     public int generateSesi(String idKelas) {
 
-    Connection con = Koneksi.getKoneksi();
+        Connection con = Koneksi.getKoneksi();
 
-    int sesi = 1;
+        int sesi = 1;
 
-    try {
+        try {
 
-        String sql = """
-                     SELECT MAX(sesi_ke) AS sesi
-                     FROM jadwal
-                     WHERE id_kelas = ?
-                     """;
+            String sql = """
+                        SELECT MAX(sesi_ke) AS sesi
+                        FROM jadwal
+                        WHERE id_kelas = ?
+                        """;
 
-        PreparedStatement ps = con.prepareStatement(sql);
+            PreparedStatement ps = con.prepareStatement(sql);
 
-        ps.setString(1, idKelas);
+            ps.setString(1, idKelas);
 
-        ResultSet rs = ps.executeQuery();
+            ResultSet rs = ps.executeQuery();
 
-        if (rs.next()) {
+            if (rs.next()) {
 
-            int sesiTerakhir = rs.getInt("sesi");
+                int sesiTerakhir = rs.getInt("sesi");
 
-            if (!rs.wasNull()) {
+                if (!rs.wasNull()) {
 
-                sesi = sesiTerakhir + 1;
+                    sesi = sesiTerakhir + 1;
+
+                }
 
             }
 
+        } catch (Exception e) {
+
+            System.out.println(e.getMessage());
+
         }
-
-    } catch (Exception e) {
-
-        System.out.println(e.getMessage());
-
-    }
 
         return sesi;
 
@@ -479,16 +390,65 @@ class JadwalDAO{
         }
     }
 
-    // public void nonaktifkanJadwalLama(String idKelas) {
-    //     String sql = "UPDATE jadwal SET status = 'T' WHERE id_kelas = ?";
-    //     try (Connection conn = Koneksi.getKoneksi();
-    //         PreparedStatement pstmt = conn.prepareStatement(sql)) {
-    //         pstmt.setString(1, idKelas);
-    //         pstmt.executeUpdate();
+    public Jadwal cariById(String idJadwal) {
+        Connection con = Koneksi.getKoneksi();
 
-    //     } catch (SQLException e) {
-    //         System.out.println("Gagal menonaktifkan jadwal lama: " + e.getMessage());
-    //     }
-    // }
+        Jadwal jadwal = null;
+
+        try {
+
+            String sql = """
+                SELECT
+                    j.id_jadwal,
+                    j.tanggal_mulai,
+                    j.sesi_ke,
+                    j.status,
+
+                    k.id_kelas,
+                    k.nama_kelas,
+                    k.harga,
+                    k.kapasitas
+
+                FROM jadwal j
+
+                JOIN kelas k
+                    ON j.id_kelas = k.id_kelas
+
+                WHERE j.id_jadwal = ?
+                """;
+
+            PreparedStatement ps = con.prepareStatement(sql);
+
+            ps.setString(1, idJadwal);
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+
+                Kelas kelas = new Kelas(
+                        rs.getString("id_kelas"),
+                        rs.getString("nama_kelas"),
+                        rs.getDouble("harga"),
+                        rs.getInt("kapasitas")
+                );
+
+                jadwal = new Jadwal(
+                        rs.getString("id_jadwal"),
+                        kelas,
+                        rs.getString("tanggal_mulai"),
+                        rs.getString("status"),
+                        rs.getInt("sesi_ke")
+                );
+
+            }
+
+        } catch (Exception e) {
+
+            System.out.println(e.getMessage());
+
+        }
+
+        return jadwal;
+    }
 
 }
