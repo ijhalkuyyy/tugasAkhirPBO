@@ -419,13 +419,73 @@ class JadwalDAO{
         return daftarJadwal;
     }
 
+    public List<Jadwal> ambilJadwalAktifObjek() {
+        List<Jadwal> daftarJadwal = new ArrayList<>();
+        String sql = """
+                SELECT
+                    j.id_jadwal,
+                    j.tanggal_mulai,
+                    j.tanggal_selesai,
+                    j.sesi_ke,
+                    j.status,
+                    k.id_kelas,
+                    k.nama_kelas,
+                    k.harga,
+                    k.kapasitas
+                FROM jadwal j
+                JOIN kelas k ON j.id_kelas = k.id_kelas
+                WHERE j.status = 'A'
+                ORDER BY j.tanggal_mulai ASC
+                """;
+
+        try (Connection conn = Koneksi.getKoneksi();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Kelas kelas = new Kelas(
+                        rs.getString("id_kelas"),
+                        rs.getString("nama_kelas"),
+                        rs.getDouble("harga"),
+                        rs.getInt("kapasitas")
+                );
+
+                Jadwal jadwal = new Jadwal(
+                        rs.getString("id_jadwal"),
+                        kelas,
+                        rs.getString("tanggal_mulai"),
+                        rs.getString("tanggal_selesai"),
+                        rs.getInt("sesi_ke")
+                );
+                jadwal.setStatus(rs.getString("status"));
+                daftarJadwal.add(jadwal);
+            }
+        } catch (SQLException e) {
+            System.out.println("Gagal mengambil jadwal aktif: " + e.getMessage());
+        }
+
+        return daftarJadwal;
+    }
+
+    public boolean ubahStatusJadwalMenjadiNonaktif(String idJadwal) {
+        String sql = "UPDATE jadwal SET status = 'T' WHERE id_jadwal = ?";
+        try (Connection conn = Koneksi.getKoneksi();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, idJadwal);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.out.println("Gagal mengubah status jadwal: " + e.getMessage());
+            return false;
+        }
+    }
+
     public void nonaktifkanJadwalLama(String idKelas) {
         String sql = "UPDATE jadwal SET status = 'T' WHERE id_kelas = ?";
         try (Connection conn = Koneksi.getKoneksi();
             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, idKelas);
             pstmt.executeUpdate();
-            
+
         } catch (SQLException e) {
             System.out.println("Gagal menonaktifkan jadwal lama: " + e.getMessage());
         }

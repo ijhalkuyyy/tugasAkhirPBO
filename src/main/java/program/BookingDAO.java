@@ -37,9 +37,10 @@ public class BookingDAO {
             if (!rs.next()) {
                 return "";
             }
-            String format = "%-4s %-8s %-20s %-8s %-20s %-10s %-12s %-12s %-10s\n";
+            String format = "%-4s %-12s %-8s %-20s %-8s %-20s %-10s %-12s %-12s %-10s\n";
             hasil.append(String.format(format,
                     "NO",
+                    "ID BOOKING",
                     "ID PST",
                     "NAMA PESERTA",
                     "ID KLS",
@@ -53,8 +54,7 @@ public class BookingDAO {
             int no = 1;
             do {
                 hasil.append(String.format(format,
-                        no++,
-                        rs.getString("id_peserta"),
+                        no++,                        rs.getString("id_booking"),                        rs.getString("id_peserta"),
                         rs.getString("nama_lengkap"),
                         rs.getString("id_kelas"),
                         rs.getString("nama_kelas"),

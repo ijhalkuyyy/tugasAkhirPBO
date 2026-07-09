@@ -125,6 +125,43 @@ public class JadwalUI {
         JOptionPane.showMessageDialog(null, "Jadwal berhasil ditambahkan!");
     }
 
+    public void ubahStatusJadwalMenjadiNonaktif() {
+        List<Jadwal> daftarJadwalAktif = jadwaldao.ambilJadwalAktifObjek();
+        if (daftarJadwalAktif.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Tidak ada jadwal aktif yang bisa dinonaktifkan.");
+            return;
+        }
+
+        JComboBox<String> comboBoxJadwal = new JComboBox<>();
+        for (Jadwal jadwal : daftarJadwalAktif) {
+            comboBoxJadwal.addItem(
+                    jadwal.getIdJadwal() + " - " + jadwal.getKelas().getNamaKelas() + " - Sesi " + jadwal.getSesiKe()
+            );
+        }
+
+        int pilihJadwal = JOptionPane.showConfirmDialog(
+                null,
+                comboBoxJadwal,
+                "Pilih Jadwal Aktif",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (pilihJadwal != JOptionPane.OK_OPTION) {
+            return;
+        }
+
+        String selectedJadwal = (String) comboBoxJadwal.getSelectedItem();
+        String idJadwal = selectedJadwal != null ? selectedJadwal.split(" - ")[0] : "";
+
+        boolean berhasil = jadwaldao.ubahStatusJadwalMenjadiNonaktif(idJadwal);
+        if (berhasil) {
+            JOptionPane.showMessageDialog(null, "Jadwal berhasil dinonaktifkan.");
+        } else {
+            JOptionPane.showMessageDialog(null, "Gagal menonaktifkan jadwal.");
+        }
+    }
+
     public void ubahJadwal() {
         List<String> daftarJadwal = jadwaldao.ambilSemuaJadwalDropdown();
         if (daftarJadwal.isEmpty()) {

@@ -27,12 +27,13 @@ public class App {
                         "========JADWAL========\n" +
                         "7. Input tambah Jadwal\n" +
                         "8. Tampil Data Jadwal\n" +
-                        "9. Ubah Jadwal\n\n" +
+                        "9. Ubah Jadwal\n" +
+                        "10. Nonaktifkan Jadwal Aktif\n\n" +
                         "========BOOKING========\n" +
-                        "10. Tambah Booking\n" +
-                        "11. Ubah Status Pembayaran\n" +
-                        "12. Tampil Data Transaksi\n" +
-                        "13. Keluar\n\n" +
+                        "11. Tambah Booking\n" +
+                        "12. Ubah Status Pembayaran\n" +
+                        "13. Tampil Data Transaksi\n" +
+                        "14. Keluar\n\n" +
                         "Pilihan : "
                     );
 
@@ -41,7 +42,7 @@ public class App {
                     }
 
                     pilih = Integer.parseInt(inputMenu);
-                    if (pilih >= 1 && pilih <= 13) {
+                    if (pilih >= 1 && pilih <= 14) {
                         putar = false;
                     } else {
                         JOptionPane.showMessageDialog(null, "Masukkan pilihan 1-13.");
@@ -61,10 +62,11 @@ public class App {
                 case 7: jadwalUI.inputDataJadwal(); break;
                 case 8: jadwalUI.tampilDataJadwal(); break;
                 case 9: jadwalUI.ubahJadwal(); break;
-                case 10: bookingUI.tambahBooking(); break;
-                case 11: bookingUI.ubahStatusPembayaran(); break;
-                case 12: bookingUI.tampilDataTransaksi(); break;
-                case 13: running = false; break;
+                case 10: jadwalUI.ubahStatusJadwalMenjadiNonaktif(); break;
+                case 11: bookingUI.tambahBooking(); break;
+                case 12: bookingUI.ubahStatusPembayaran(); break;
+                case 13: bookingUI.tampilDataTransaksi(); break;
+                case 14: running = false; break;
                 // case 12: running = false; break;
             }
         } while(running);
