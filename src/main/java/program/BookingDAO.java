@@ -48,28 +48,29 @@ public class BookingDAO {
             if (!rs.next()) {
                 return "";
             }
-            String format = "%-4s %-12s %-8s %-20s %-8s %-20s %-10s %-12s %-12s %-10s\n";
+            String format = "%-4s %-12s %-20s %-20s %-12s %-12s %-10s\n";
             hasil.append(String.format(format,
                     "NO",
                     "ID BOOKING",
-                    "ID PST",
+                    //"ID PST",
                     "NAMA PESERTA",
-                    "ID KLS",
+                    //"ID KLS",
                     "NAMA KELAS",
-                    "ID JWL",
+                    //"ID JWL",
                     "TGL MULAI",
                     "METODE",
                     "STATUS"));
 
-            hasil.append("=========================================================================================================================================\n");
+            hasil.append("=============================================================================================\n");
             int no = 1;
             do {
                 hasil.append(String.format(format,
-                        no++,                        rs.getString("id_booking"),                        rs.getString("id_peserta"),
+                        no++,                        rs.getString("id_booking"),                        
+                        //rs.getString("id_peserta"),
                         rs.getString("nama_lengkap"),
-                        rs.getString("id_kelas"),
+                        //rs.getString("id_kelas"),
                         rs.getString("nama_kelas"),
-                        rs.getString("id_jadwal"),
+                        //rs.getString("id_jadwal"),
                         rs.getString("tanggal_mulai"),
                         rs.getString("metode_pembayaran"),
                         rs.getString("status_pembayaran")

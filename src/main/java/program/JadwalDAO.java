@@ -479,16 +479,16 @@ class JadwalDAO{
         }
     }
 
-    public void nonaktifkanJadwalLama(String idKelas) {
-        String sql = "UPDATE jadwal SET status = 'T' WHERE id_kelas = ?";
-        try (Connection conn = Koneksi.getKoneksi();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, idKelas);
-            pstmt.executeUpdate();
+    // public void nonaktifkanJadwalLama(String idKelas) {
+    //     String sql = "UPDATE jadwal SET status = 'T' WHERE id_kelas = ?";
+    //     try (Connection conn = Koneksi.getKoneksi();
+    //         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+    //         pstmt.setString(1, idKelas);
+    //         pstmt.executeUpdate();
 
-        } catch (SQLException e) {
-            System.out.println("Gagal menonaktifkan jadwal lama: " + e.getMessage());
-        }
-    }
+    //     } catch (SQLException e) {
+    //         System.out.println("Gagal menonaktifkan jadwal lama: " + e.getMessage());
+    //     }
+    // }
 
 }

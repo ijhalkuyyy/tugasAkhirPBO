@@ -116,7 +116,7 @@ public class JadwalUI {
         String tanggalSelesai = dateSelesai.toString();
 
         int sesi = jadwaldao.generateSesi(kelas.getIdKelas());
-        jadwaldao.nonaktifkanJadwalLama(kelas.getIdKelas());
+        //jadwaldao.nonaktifkanJadwalLama(kelas.getIdKelas());
 
         String statusBaru = "A";
         Jadwal jadwal = new Jadwal(jadwaldao.generateIdJadwal(), kelas, tanggalMulai, tanggalSelesai, sesi);
