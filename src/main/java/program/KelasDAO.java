@@ -3,6 +3,7 @@ package program;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -160,7 +161,7 @@ public class KelasDAO {
     // ===================================================
     // UBAH HARGA
     // ===================================================
-    public boolean ubahHarga(String idKelas, int hargaBaru) {
+    public boolean ubahHarga(String idKelas, Double hargaBaru) {
         Connection con = Koneksi.getKoneksi();
         try {
 
@@ -171,7 +172,7 @@ public class KelasDAO {
                          """;
 
             PreparedStatement ps = con.prepareStatement(sql);
-            ps.setInt(1, hargaBaru);
+            ps.setDouble(1, hargaBaru);
             ps.setString(2, idKelas);
             int hasil = ps.executeUpdate();
             return hasil > 0;
@@ -222,4 +223,19 @@ public class KelasDAO {
         return id;
     }
 
+    public boolean cekKelasAda(String idKelas) {
+        boolean ada = false;
+        String sql = "SELECT COUNT(*) FROM kelas WHERE id_kelas = ?";
+        try (Connection conn = Koneksi.getKoneksi();
+            PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, idKelas);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                ada = rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error cek kelas: " + e.getMessage());
+        }
+        return ada;
+    }
 }

@@ -31,17 +31,16 @@ public class App {
                         "========Peserta========\n" +
                         "1. Input Data Peserta\n" +
                         "2. Tampil Data Peserta\n" +
-                        "3. Cari Data Peserta ID\n" +
+                        "3. Cari Data Peserta ID\n\n" +
                         "========Kelas========\n" +
                         "4. Input Kelas\n" +
                         "5. Tampil Data Kelas\n" +
-                        "6. Ubah Harga Kelas\n" +
-                        "7. Keluar\n\n" +
+                        "6. Ubah Harga Kelas\n\n" +
                         "========JADWAL========\n" +
-                        "8. Input tambah Jadwal\n" +
-                        "9. Tampil Data Jadwal\n" +
-                        "10. Ubah Jadwal\n" +
-                        "11. Keluar\n\n" +
+                        "7. Input tambah Jadwal\n" +
+                        "8. Tampil Data Jadwal\n" +
+                        "9. Ubah Jadwal\n" +
+                        "10. Keluar\n\n" +
                         "Pilihan : "
                     );
 
@@ -67,11 +66,10 @@ public class App {
                 case 4: tambahKelas(); break;
                 case 5: tampilDataKelas(); break;
                 case 6: ubahHargaKelas(); break;
-                case 7: running = false; break;
-                case 8: inputDataJadwal(); break;
-                case 9: tampilDataJadwal(); break;
-                case 10: ubahJadwal(); break;
-                case 11: running = false; break;
+                case 7: inputDataJadwal(); break;
+                case 8: tampilDataJadwal(); break;
+                case 9: ubahJadwal(); break;
+                case 10: running = false; break;
             }
         } while(running);
     }
@@ -110,19 +108,47 @@ public class App {
     }
 
     static void cariDataPesertaBerdasarkanID(){
-        String id = inputNonEmpty("Masukkan ID Peserta");
-        Peserta peserta = pesertaDAO.cariById(id);
-        if (peserta != null) {
-            JOptionPane.showMessageDialog(null, "Data Peserta:\n" +
-                "ID: " + peserta.getIdPeserta() + "\n" +
-                "Nama Lengkap: " + peserta.getNamaLengkap() + "\n" +
-                "Nama Panggilan: " + peserta.getNamaPanggilan() + "\n" +
-                "No HP: " + peserta.getNoHp());
-        } else {
-            JOptionPane.showMessageDialog(null, "Peserta tidak ditemukan.");
-        }
-    }
+        String dataPeserta = pesertaDAO.tampilSemuaPeserta();
 
+        if(dataPeserta.isEmpty()){
+            JOptionPane.showMessageDialog(null, "Belum ada data peserta");
+            return;
+        }
+        
+        JTextArea textArea = new JTextArea(dataPeserta);
+        textArea.setEditable(false);
+        textArea.setFont(new Font("Monospaced", Font.PLAIN, 14)); 
+        textArea.setMargin(new Insets(10, 10, 10, 10));
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        scrollPane.setPreferredSize(new Dimension(600, 300));
+
+        Object[] tampilanPesan = {
+            "Daftar Peserta:",
+            scrollPane,
+            "\nMasukkan ID Peserta yang ingin dicari: "
+        };
+
+
+        boolean putar = true;
+        String idPeserta = "";
+        do{
+            idPeserta = JOptionPane.showInputDialog(null, tampilanPesan, "Ubah Harga Kelas", JOptionPane.PLAIN_MESSAGE);
+
+            // String id = inputNonEmpty("Masukkan ID Peserta");
+            Peserta peserta = pesertaDAO.cariById(idPeserta);
+            if (peserta != null) {
+                JOptionPane.showMessageDialog(null, "Data Peserta:\n" +
+                    "ID: " + peserta.getIdPeserta() + "\n" +
+                    "Nama Lengkap: " + peserta.getNamaLengkap() + "\n" +
+                    "Nama Panggilan: " + peserta.getNamaPanggilan() + "\n" +
+                    "No HP: " + peserta.getNoHp());
+                    putar = false;
+            } else {
+                JOptionPane.showMessageDialog(null, "Peserta tidak ditemukan.");
+                putar = true;
+            }
+        }while(putar);
+    }
     // MENU KELAS
     static void tampilDataKelas() {
         String dataKelas = kelasDAO.tampilSemuaKelas();
@@ -156,23 +182,45 @@ public class App {
             "\nMasukkan ID Kelas yang harganya ingin diubah:"
         };
 
-        String idKelas = JOptionPane.showInputDialog(null, tampilanPesan, "Ubah Harga Kelas", JOptionPane.PLAIN_MESSAGE);
-        
-        if (idKelas == null || idKelas.trim().isEmpty()) {
-            return;
+        String idKelas = "";        
+        while (true) {
+            do{
+                idKelas = JOptionPane.showInputDialog(null, tampilanPesan, "Ubah Harga Kelas", JOptionPane.PLAIN_MESSAGE);
+                if(idKelas==null) System.exit(0);
+            }while(idKelas.trim().isEmpty());
+            // idKelas = JOptionPane.showInputDialog(null, tampilanPesan, "Ubah Harga Kelas", JOptionPane.PLAIN_MESSAGE);
+            
+            if (idKelas == null || idKelas.trim().isEmpty()) {
+                return;
+            }
+            boolean kelasDitemukan = kelasDAO.cekKelasAda(idKelas);
+
+            if (kelasDitemukan) {
+                break; 
+            } else {
+                JOptionPane.showMessageDialog(null, 
+                    "ID Kelas (" + idKelas + ") tidak Ditemukan!\n Silakan masukkan ID yang benar.", 
+                    "ID Tidak Valid", 
+                    JOptionPane.WARNING_MESSAGE);
+            }
         }
 
-        String hargaBaruStr = JOptionPane.showInputDialog("Masukkan Harga Baru untuk Kelas " + idKelas + ":");
-        if (hargaBaruStr == null || hargaBaruStr.trim().isEmpty()) {
-            return; 
-        }
+        Double hargaBaru = 0.0;
+        do {
+            hargaBaru = inputDouble("Masukkan Harga Baru untuk Kelas");
+        } while (hargaBaru<=0);
+        // String hargaBaruStr = JOptionPane.showInputDialog("Masukkan Harga Baru untuk Kelas " + idKelas + ":");
+        // if (hargaBaruStr == null || hargaBaruStr.trim().isEmpty()) {
+        //     return; 
+        // }
 
         try {
-            int hargaBaru = Integer.parseInt(hargaBaruStr);
             boolean berhasil = kelasDAO.ubahHarga(idKelas, hargaBaru);
+            Kelas dataCelass = kelasDAO.cariById(idKelas);
+            String namaKelas = dataCelass.getNamaKelas();
             
             if (berhasil) {
-                JOptionPane.showMessageDialog(null, "Harga kelas " + idKelas + " berhasil diubah menjadi " + hargaBaru + ".");
+                JOptionPane.showMessageDialog(null, "Harga kelas " + namaKelas + " berhasil diubah menjadi " + hargaBaru + ".");
             } else {
                 JOptionPane.showMessageDialog(null, "Gagal mengubah harga! Pastikan ID Kelas (" + idKelas + ") benar dan ada di daftar.", "Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -183,8 +231,15 @@ public class App {
 
     static void tambahKelas() {
         String namaKelas = inputNonEmpty("Masukkan Nama Kelas");
-        double harga =  inputDouble("Masukkan Harga Kelas");
-        int kapasitas = inputInt("Masukkan Kapasitas Kelas");
+        double harga = 0;
+        do {
+            harga =  inputDouble("Masukkan Harga Kelas");
+        } while (harga<=0);
+
+        int kapasitas = 0;
+        do {
+            kapasitas = inputInt("Masukkan Kapasitas Kelas");
+        } while (kapasitas<=0); 
         // JOptionPane.showInputDialog("Masukkan Harga Kelas:");
         // double harga = Double.parseDouble(hargaStr);
         // String kapasitasStr = JOptionPane.showInputDialog("Masukkan Kapasitas Kelas:");
@@ -357,13 +412,5 @@ public class App {
         } while (!valid);
         return value;
     }
-    
-
-
-
-
-
-
-
 }
 

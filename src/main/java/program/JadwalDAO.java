@@ -260,9 +260,7 @@ class JadwalDAO{
     String id = "JWL-01";
 
     try {
-
         String sql = "SELECT MAX(id_jadwal) AS max_id FROM jadwal";
-
         PreparedStatement ps = con.prepareStatement(sql);
 
         ResultSet rs = ps.executeQuery();
