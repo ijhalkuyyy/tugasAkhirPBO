@@ -94,12 +94,12 @@ public class App {
     }
 
     static void inputDataPeserta() {
-        String namaLengkap = JOptionPane.showInputDialog("Masukkan Nama Lengkap:");
-        String namaPanggilan = JOptionPane.showInputDialog("Masukkan Nama Panggilan:");
+        String namaLengkap = inputNonEmpty("Masukkan Nama Lengkap");
+        String namaPanggilan = inputNonEmpty("Masukkan Nama Panggilan");
 
         String noHp = "";
         do { 
-            noHp = JOptionPane.showInputDialog("Masukkan No HP:");
+            noHp =inputNonEmpty("Masukkan No HP");
             if(noHp == null || noHp.length() < 10 || noHp.length() > 13) {
                 JOptionPane.showMessageDialog(null, "No HP harus memiliki panjang antara 10 hingga 13 digit.");
             }
@@ -110,7 +110,7 @@ public class App {
     }
 
     static void cariDataPesertaBerdasarkanID(){
-        String id = JOptionPane.showInputDialog("Masukkan ID Peserta:");
+        String id = inputNonEmpty("Masukkan ID Peserta");
         Peserta peserta = pesertaDAO.cariById(id);
         if (peserta != null) {
             JOptionPane.showMessageDialog(null, "Data Peserta:\n" +
@@ -163,7 +163,6 @@ public class App {
         }
 
         String hargaBaruStr = JOptionPane.showInputDialog("Masukkan Harga Baru untuk Kelas " + idKelas + ":");
-        
         if (hargaBaruStr == null || hargaBaruStr.trim().isEmpty()) {
             return; 
         }
@@ -183,12 +182,12 @@ public class App {
     }
 
     static void tambahKelas() {
-        String namaKelas = JOptionPane.showInputDialog("Masukkan Nama Kelas:");
-        String hargaStr = JOptionPane.showInputDialog("Masukkan Harga Kelas:");
-        double harga = Double.parseDouble(hargaStr);
-        String kapasitasStr = JOptionPane.showInputDialog("Masukkan Kapasitas Kelas:");
-        int kapasitas = Integer.parseInt(kapasitasStr);
-
+        String namaKelas = inputNonEmpty("Masukkan Nama Kelas");
+        double harga =  inputDouble("Masukkan Harga Kelas");
+        int kapasitas = inputInt("Masukkan Kapasitas Kelas");
+        // JOptionPane.showInputDialog("Masukkan Harga Kelas:");
+        // double harga = Double.parseDouble(hargaStr);
+        // String kapasitasStr = JOptionPane.showInputDialog("Masukkan Kapasitas Kelas:");
         Kelas kelas = new Kelas(kelasDAO.generateId(namaKelas), namaKelas, harga, kapasitas);
         kelasDAO.tambahKelas(kelas);
     }
@@ -238,8 +237,8 @@ public class App {
             return;
         }
 
-        String tanggalMulai = JOptionPane.showInputDialog("Masukkan Tanggal Mulai (YYYY-MM-DD):");
-        String tanggalSelesai = JOptionPane.showInputDialog("Masukkan Tanggal Selesai (YYYY-MM-DD):");
+        String tanggalMulai = inputNonEmpty("Masukkan Tanggal Mulai (YYYY-MM-DD):");
+        String tanggalSelesai = inputNonEmpty("Masukkan Tanggal Selesai (YYYY-MM-DD):");
         int sesi = jadwaldao.generateSesi(kelas.getIdKelas());
 
         Jadwal jadwal = new Jadwal(jadwaldao.generateIdJadwal(), kelas, tanggalMulai, tanggalSelesai, sesi);
@@ -287,7 +286,7 @@ public class App {
         String fieldDb = selectedField != null && selectedField.equals("Tanggal Mulai")
                 ? "tanggal_mulai"
                 : "tanggal_selesai";
-        String tanggalBaru = JOptionPane.showInputDialog("Masukkan tanggal baru (YYYY-MM-DD):");
+        String tanggalBaru = inputNonEmpty("Masukkan tanggal baru (YYYY-MM-DD):");
 
         if (tanggalBaru == null || tanggalBaru.trim().isEmpty()) {
             return;
