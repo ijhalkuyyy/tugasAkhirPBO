@@ -6,6 +6,7 @@ public class Jadwal {
     private String tanggalMulai;
     private String tanggalSelesai;
     private int sesi;
+    private String status;
 
     public Jadwal(String idJadwal, Kelas kelas, String tanggalMulai, String tanggalSelesai, int sesi) {
         this.idJadwal = idJadwal;
@@ -53,6 +54,14 @@ public class Jadwal {
 
     public int getSesiKe() {
         return sesi;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
 }

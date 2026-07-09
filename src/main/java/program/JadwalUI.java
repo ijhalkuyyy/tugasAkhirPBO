@@ -1,11 +1,19 @@
 package program;
 
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+
 
 public class JadwalUI {
 
@@ -17,10 +25,17 @@ public class JadwalUI {
         String dataJadwal = jadwaldao.tampilSemuaJadwal();
         if(dataJadwal.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Tidak ada data jadwal.");
-        }else {
+        } else {
             JTextArea textArea = new JTextArea(dataJadwal);
             textArea.setEditable(false);
-            JOptionPane.showMessageDialog(null, textArea, "Data Jadwal", JOptionPane.INFORMATION_MESSAGE);
+            textArea.setFont(new Font("Monospaced", Font.PLAIN, 14)); 
+            textArea.setMargin(new Insets(10, 10, 10, 10));
+            JScrollPane scrollPane = new JScrollPane(textArea);
+            scrollPane.setPreferredSize(new Dimension(800, 300));
+            JOptionPane.showMessageDialog(null, scrollPane, "Data Kelas", JOptionPane.INFORMATION_MESSAGE);
+            // JTextArea textArea = new JTextArea(dataJadwal);
+            // textArea.setEditable(false);
+            // JOptionPane.showMessageDialog(null, textArea, "Data Jadwal", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
@@ -57,12 +72,57 @@ public class JadwalUI {
             return;
         }
 
-        String tanggalMulai = val.inputNonEmpty("Masukkan Tanggal Mulai (YYYY-MM-DD):");
-        String tanggalSelesai = val.inputNonEmpty("Masukkan Tanggal Selesai (YYYY-MM-DD):");
-        int sesi = jadwaldao.generateSesi(kelas.getIdKelas());
+        // --- VALIDASI TANGGAL MULAI ---
+        LocalDate dateMulai = null;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate hariIni = LocalDate.now();
 
+        while (true) {
+            String inputMulai = val.inputNonEmpty("Masukkan Tanggal Mulai (YYYY-MM-DD):");
+            if (inputMulai == null) return;
+            
+            try {
+                dateMulai = LocalDate.parse(inputMulai, formatter);
+                if (dateMulai.isBefore(hariIni)) {
+                    JOptionPane.showMessageDialog(null, "Tanggal Mulai tidak boleh kurang dari hari ini!", "Peringatan", JOptionPane.WARNING_MESSAGE);
+                } else {
+                    break;
+                }
+            } catch (DateTimeParseException e) {
+                JOptionPane.showMessageDialog(null, "Format salah! Gunakan format YYYY-MM-DD\nContoh: 2023-10-25", "Peringatan", JOptionPane.WARNING_MESSAGE);
+            }
+        }
+
+        LocalDate dateSelesai = null;
+        while (true) {
+            String inputSelesai = val.inputNonEmpty("Masukkan Tanggal Selesai (YYYY-MM-DD):");
+            if (inputSelesai == null) return;
+            
+            try {
+                dateSelesai = LocalDate.parse(inputSelesai, formatter);
+                
+                // Cek apakah tanggal selesai lebih dulu dari tanggal mulai
+                if (dateSelesai.isBefore(dateMulai)) {
+                    JOptionPane.showMessageDialog(null, "Tanggal Selesai tidak boleh kurang dari Tanggal Mulai!", "Peringatan", JOptionPane.WARNING_MESSAGE);
+                } else {
+                    break;
+                }
+            } catch (DateTimeParseException e) {
+                JOptionPane.showMessageDialog(null, "Format salah! Gunakan format YYYY-MM-DD\nContoh: 2023-10-25", "Peringatan", JOptionPane.WARNING_MESSAGE);
+            }
+        }
+
+        String tanggalMulai = dateMulai.toString();
+        String tanggalSelesai = dateSelesai.toString();
+
+        int sesi = jadwaldao.generateSesi(kelas.getIdKelas());
+        jadwaldao.nonaktifkanJadwalLama(kelas.getIdKelas());
+
+        String statusBaru = "A";
         Jadwal jadwal = new Jadwal(jadwaldao.generateIdJadwal(), kelas, tanggalMulai, tanggalSelesai, sesi);
+        jadwal.setStatus(statusBaru);
         jadwaldao.tambahJadwal(jadwal);
+        JOptionPane.showMessageDialog(null, "Jadwal berhasil ditambahkan!");
     }
 
     public void ubahJadwal() {
@@ -106,10 +166,25 @@ public class JadwalUI {
         String fieldDb = selectedField != null && selectedField.equals("Tanggal Mulai")
                 ? "tanggal_mulai"
                 : "tanggal_selesai";
-        String tanggalBaru = val.inputNonEmpty("Masukkan tanggal baru (YYYY-MM-DD):");
-
-        if (tanggalBaru == null || tanggalBaru.trim().isEmpty()) {
-            return;
+                
+        // --- VALIDASI FORMAT UNTUK UBAH JADWAL ---
+        String tanggalBaru = null;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        
+        while (true) {
+            tanggalBaru = val.inputNonEmpty("Masukkan tanggal baru (YYYY-MM-DD):");
+            if (tanggalBaru == null || tanggalBaru.trim().isEmpty()) {
+                return; // Batal jika user klik cancel
+            }
+            
+            try {
+                LocalDate.parse(tanggalBaru, formatter); // Cek format saja
+                // Catatan: Untuk cek Tgl Mulai vs Tgl Selesai di menu Update, 
+                // kamu harus query data tanggal yang satunya lagi dari Database lewat jadwaldao.
+                break; 
+            } catch (DateTimeParseException e) {
+                 JOptionPane.showMessageDialog(null, "Format salah! Gunakan format YYYY-MM-DD\nContoh: 2023-10-25", "Peringatan", JOptionPane.WARNING_MESSAGE);
+            }
         }
 
         boolean berhasil = jadwaldao.ubahJadwal(idJadwal, fieldDb, tanggalBaru);
@@ -119,7 +194,4 @@ public class JadwalUI {
             JOptionPane.showMessageDialog(null, "Gagal mengubah jadwal.");
         }
     }
-
-    
-
 }

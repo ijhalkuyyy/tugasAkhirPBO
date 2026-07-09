@@ -126,23 +126,14 @@ public class PesertaDAO {
     // CARI BERDASARKAN ID
     // ==========================
     public Peserta cariById(String idPeserta) {
-
         Connection con = Koneksi.getKoneksi();
-
         Peserta peserta = null;
-
         try {
-
             String sql = "SELECT * FROM peserta WHERE id_peserta = ?";
-
             PreparedStatement ps = con.prepareStatement(sql);
-
             ps.setString(1, idPeserta);
-
             ResultSet rs = ps.executeQuery();
-
             if (rs.next()) {
-
                 peserta = new Peserta(
                         rs.getString("id_peserta"),
                         rs.getString("nama_lengkap"),

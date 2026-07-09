@@ -1,11 +1,12 @@
 package program;
 
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Insets;
+
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-
-import java.awt.*;
-import java.sql.Connection;
 
 public class PesertaUI {
 
@@ -73,14 +74,31 @@ public class PesertaUI {
             idPeserta = JOptionPane.showInputDialog(null, tampilanPesan, "Ubah Harga Kelas", JOptionPane.PLAIN_MESSAGE);
 
             // String id = inputNonEmpty("Masukkan ID Peserta");
+            
             Peserta peserta = pesertaDAO.cariById(idPeserta);
             if (peserta != null) {
-                JOptionPane.showMessageDialog(null, "Data Peserta:\n" +
-                    "ID: " + peserta.getIdPeserta() + "\n" +
-                    "Nama Lengkap: " + peserta.getNamaLengkap() + "\n" +
-                    "Nama Panggilan: " + peserta.getNamaPanggilan() + "\n" +
-                    "No HP: " + peserta.getNoHp());
-                    putar = false;
+                String teksTampilan = String.format(
+                    "=====================================\n" +
+                    "            DATA PESERTA             \n" +
+                    "=====================================\n" +
+                    "%-16s : %s\n" +
+                    "%-16s : %s\n" +
+                    "%-16s : %s\n" +
+                    "%-16s : %s\n" +
+                    "=====================================",
+                    "ID Peserta", peserta.getIdPeserta(),
+                    "Nama Lengkap", peserta.getNamaLengkap(),
+                    "Nama Panggilan", peserta.getNamaPanggilan(),
+                    "No HP", peserta.getNoHp()
+                );
+                javax.swing.JTextArea textAreaP = new javax.swing.JTextArea(teksTampilan);
+                textAreaP.setFont(new java.awt.Font("Monospaced", java.awt.Font.PLAIN, 14));
+                textAreaP.setEditable(false); 
+                textAreaP.setOpaque(false); 
+                textAreaP.setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+                javax.swing.JOptionPane.showMessageDialog(null, textAreaP, "Informasi Peserta", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                putar = false;
             } else {
                 JOptionPane.showMessageDialog(null, "Peserta tidak ditemukan.");
                 putar = true;

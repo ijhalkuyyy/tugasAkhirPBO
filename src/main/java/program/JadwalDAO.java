@@ -2,6 +2,7 @@ package program;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -98,113 +99,101 @@ class JadwalDAO{
 
     public String tampilSemuaJadwal() {
 
-    Connection con = Koneksi.getKoneksi();
+        Connection con = Koneksi.getKoneksi();
 
-    StringBuilder hasil = new StringBuilder();
+        StringBuilder hasil = new StringBuilder();
 
-    try {
+        try {
 
-        String sql = """
-                SELECT
-                    j.id_jadwal,
-                    k.id_kelas,
-                    k.nama_kelas,
-                    j.tanggal_mulai,
-                    j.tanggal_selesai,
-                    j.sesi_ke
-                FROM jadwal j
-                JOIN kelas k
-                ON j.id_kelas = k.id_kelas
-                ORDER BY j.id_jadwal DESC
-                """;
+            String sql = """
+                    SELECT
+                        j.id_jadwal,
+                        k.id_kelas,
+                        k.nama_kelas,
+                        j.tanggal_mulai,
+                        j.tanggal_selesai,
+                        j.sesi_ke
+                    FROM jadwal j
+                    JOIN kelas k
+                    ON j.id_kelas = k.id_kelas
+                    WHERE j.status = 'A'
+                    ORDER BY j.id_jadwal DESC
+                    """;
 
-        PreparedStatement ps = con.prepareStatement(sql);
+            PreparedStatement ps = con.prepareStatement(sql);
 
-        ResultSet rs = ps.executeQuery();
+            ResultSet rs = ps.executeQuery();
 
-        if (!rs.next()) {
-            return "";
-        }
+            if (!rs.next()) {
+                return "";
+            }
 
-        String format = "%-12s %-30s %-18s %-18s %-8s\n";
-
-        hasil.append(String.format(format,
-                "ID",
-                "KELAS",
-                "TANGGAL MULAI",
-                "TANGGAL SELESAI",
-                "SESI"));
-
-        hasil.append("==========================================================================\n");
-
-        do {
+            String format = "%-12s %-18s %-18s %-18s %-8s\n";
 
             hasil.append(String.format(format,
+                    "ID",
+                    "KELAS",
+                    "TANGGAL MULAI",
+                    "TANGGAL SELESAI",
+                    "SESI"));
 
-                    rs.getString("id_jadwal"),
+            hasil.append("=====================================================================================\n");
 
-                    rs.getString("id_kelas")
-                    + " - "
-                    + rs.getString("nama_kelas"),
+            do {
 
-                    rs.getString("tanggal_mulai"),
+                hasil.append(String.format(format,
 
-                    rs.getString("tanggal_selesai"),
+                        rs.getString("id_jadwal"),
+                        rs.getString("nama_kelas"),
+                        rs.getString("tanggal_mulai"),
+                        rs.getString("tanggal_selesai"),
+                        rs.getInt("sesi_ke")
 
-                    rs.getInt("sesi_ke")
+                ));
 
-            ));
+            } while (rs.next());
 
-        } while (rs.next());
+        } catch (Exception e) {
 
-    } catch (Exception e) {
+            return e.getMessage();
 
-        return e.getMessage();
-
-    }
-
+        }
         return hasil.toString();
-
     }
+
+    
 
     public boolean tambahJadwal(Jadwal jadwal){
 
-    Connection con = Koneksi.getKoneksi();
+        Connection con = Koneksi.getKoneksi();
+        try{
+            String sql = """
+                    INSERT INTO jadwal
+                    (id_jadwal,id_kelas,tanggal_mulai,tanggal_selesai,sesi_ke, status)
 
-    try{
+                    VALUES(?,?,?,?,?,?)
+                    """;
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, jadwal.getIdJadwal());
+            ps.setString(2, jadwal.getKelas().getIdKelas());
+            ps.setString(3, jadwal.getTanggalMulai());
+            ps.setString(4, jadwal.getTanggalSelesai());
+            ps.setInt(5, jadwal.getSesiKe());
+            ps.setString(6, jadwal.getStatus());
 
-        String sql = """
-                INSERT INTO jadwal
-                (id_jadwal,id_kelas,tanggal_mulai,tanggal_selesai,sesi_ke)
+            int hasil = ps.executeUpdate();
 
-                VALUES(?,?,?,?,?)
-                """;
+            return hasil>0;
 
-        PreparedStatement ps = con.prepareStatement(sql);
+        }catch(Exception e){
 
-        ps.setString(1, jadwal.getIdJadwal());
+            System.out.println(e.getMessage());
 
-        ps.setString(2, jadwal.getKelas().getIdKelas());
+            return false;
 
-        ps.setString(3, jadwal.getTanggalMulai());
-
-        ps.setString(4, jadwal.getTanggalSelesai());
-
-        ps.setInt(5, jadwal.getSesiKe());
-
-        int hasil = ps.executeUpdate();
-
-        return hasil>0;
-
-    }catch(Exception e){
-
-        System.out.println(e.getMessage());
-
-        return false;
+        }
 
     }
-
-}
 
     public List<String> ambilSemuaJadwalDropdown() {
         List<String> daftarJadwal = new ArrayList<>();
@@ -428,6 +417,18 @@ class JadwalDAO{
         }
 
         return daftarJadwal;
+    }
+
+    public void nonaktifkanJadwalLama(String idKelas) {
+        String sql = "UPDATE jadwal SET status = 'T' WHERE id_kelas = ?";
+        try (Connection conn = Koneksi.getKoneksi();
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, idKelas);
+            pstmt.executeUpdate();
+            
+        } catch (SQLException e) {
+            System.out.println("Gagal menonaktifkan jadwal lama: " + e.getMessage());
+        }
     }
 
 }

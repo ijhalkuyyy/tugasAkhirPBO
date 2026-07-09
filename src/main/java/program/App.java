@@ -3,9 +3,6 @@ import javax.swing.JOptionPane;
 
 
 public class App {
-
-
-
     public static void main(String[] args) {
         PesertaUI pesertaUI = new PesertaUI();
         KelasUI kelasUI = new KelasUI();
