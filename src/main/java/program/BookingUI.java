@@ -130,9 +130,26 @@ public class BookingUI {
     }
 
     void tampilDataTransaksi() {
-        String dataTransaksi = bookingDAO.tampilSemuaTransaksi();
+        String[] opsiStatus = {"Semua", "Lunas", "DP 50%"};
+        JComboBox<String> comboFilter = new JComboBox<>(opsiStatus);
+        int hasil = JOptionPane.showConfirmDialog(
+                null,
+                comboFilter,
+                "Filter Data Booking",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (hasil != JOptionPane.OK_OPTION) {
+            return;
+        }
+
+        String statusDipilih = (String) comboFilter.getSelectedItem();
+        String statusFilter = "Semua".equals(statusDipilih) ? null : statusDipilih;
+        String dataTransaksi = bookingDAO.tampilSemuaTransaksi(statusFilter);
+
         if (dataTransaksi.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Tidak ada data transaksi.");
+            JOptionPane.showMessageDialog(null, "Tidak ada data transaksi untuk filter tersebut.");
         } else {
             tampilkanScroll(dataTransaksi, "Data Transaksi");
         }
@@ -149,9 +166,9 @@ public class BookingUI {
     }
 
     public void ubahStatusPembayaran() {
-        String dataBooking = bookingDAO.tampilSemuaTransaksi();
+        String dataBooking = bookingDAO.tampilSemuaTransaksi("DP 50%");
         if (dataBooking.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Belum ada data booking.");
+            JOptionPane.showMessageDialog(null, "Belum ada booking dengan status DP 50%.");
             return;
         }
 

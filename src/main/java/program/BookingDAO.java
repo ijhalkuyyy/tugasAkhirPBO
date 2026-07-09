@@ -8,10 +8,14 @@ import java.util.List;
 
 public class BookingDAO {
     public String tampilSemuaTransaksi(){
+        return tampilSemuaTransaksi(null);
+    }
+
+    public String tampilSemuaTransaksi(String statusPembayaran){
         Connection con = Koneksi.getKoneksi();
         StringBuilder hasil = new StringBuilder();
         try {
-            String sql = """
+            StringBuilder sql = new StringBuilder("""
                 SELECT
                     b.id_booking,
                     p.id_peserta,
@@ -29,10 +33,17 @@ public class BookingDAO {
                     ON b.id_jadwal = j.id_jadwal
                 JOIN kelas k
                     ON j.id_kelas = k.id_kelas
-                ORDER BY b.id_booking DESC
-                """;
+                """);
 
-            PreparedStatement ps = con.prepareStatement(sql);
+            if (statusPembayaran != null && !statusPembayaran.isBlank()) {
+                sql.append(" WHERE b.status_pembayaran = ?");
+            }
+            sql.append(" ORDER BY b.id_booking DESC");
+
+            PreparedStatement ps = con.prepareStatement(sql.toString());
+            if (statusPembayaran != null && !statusPembayaran.isBlank()) {
+                ps.setString(1, statusPembayaran);
+            }
             ResultSet rs = ps.executeQuery();
             if (!rs.next()) {
                 return "";
