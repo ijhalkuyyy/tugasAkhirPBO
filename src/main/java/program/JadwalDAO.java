@@ -237,6 +237,55 @@ class JadwalDAO{
         return daftarJadwal;
     }
 
+    public List<Jadwal> ambilJadwalByKelas(String idKelas) {
+        List<Jadwal> daftarJadwal = new ArrayList<>();
+        Connection con = Koneksi.getKoneksi();
+
+        try {
+            String sql = """
+                    SELECT
+                        j.id_jadwal,
+                        j.tanggal_mulai,
+                        j.tanggal_selesai,
+                        j.sesi_ke,
+                        k.id_kelas,
+                        k.nama_kelas,
+                        k.harga,
+                        k.kapasitas
+                    FROM jadwal j
+                    JOIN kelas k
+                    ON j.id_kelas = k.id_kelas
+                    WHERE j.id_kelas = ?
+                    ORDER BY j.tanggal_mulai ASC
+                    """;
+
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, idKelas);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Kelas kelas = new Kelas(
+                        rs.getString("id_kelas"),
+                        rs.getString("nama_kelas"),
+                        rs.getDouble("harga"),
+                        rs.getInt("kapasitas")
+                );
+
+                daftarJadwal.add(new Jadwal(
+                        rs.getString("id_jadwal"),
+                        kelas,
+                        rs.getString("tanggal_mulai"),
+                        rs.getString("tanggal_selesai"),
+                        rs.getInt("sesi_ke")
+                ));
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return daftarJadwal;
+    }
+
     public boolean ubahJadwal(String idJadwal, String kolom, String nilaiBaru) {
         Connection con = Koneksi.getKoneksi();
 
@@ -334,6 +383,51 @@ class JadwalDAO{
     }
 
 
+    public List<Jadwal> ambilSemuaJadwalObjek() {
+        List<Jadwal> daftarJadwal = new ArrayList<>();
+        Connection con = Koneksi.getKoneksi();
 
+        try {
+            String sql = """
+                    SELECT
+                        j.id_jadwal,
+                        j.tanggal_mulai,
+                        j.tanggal_selesai,
+                        j.sesi_ke,
+                        k.id_kelas,
+                        k.nama_kelas,
+                        k.harga,
+                        k.kapasitas
+                    FROM jadwal j
+                    JOIN kelas k
+                    ON j.id_kelas = k.id_kelas
+                    ORDER BY j.id_jadwal DESC
+                    """;
+
+            PreparedStatement ps = con.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Kelas kelas = new Kelas(
+                        rs.getString("id_kelas"),
+                        rs.getString("nama_kelas"),
+                        rs.getDouble("harga"),
+                        rs.getInt("kapasitas")
+                );
+
+                daftarJadwal.add(new Jadwal(
+                        rs.getString("id_jadwal"),
+                        kelas,
+                        rs.getString("tanggal_mulai"),
+                        rs.getString("tanggal_selesai"),
+                        rs.getInt("sesi_ke")
+                ));
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return daftarJadwal;
+    }
 
 }

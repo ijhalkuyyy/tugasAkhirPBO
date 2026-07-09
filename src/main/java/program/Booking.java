@@ -5,21 +5,18 @@ public class Booking {
     private String idBooking;
     private String idPeserta;
     private String idJadwal;
-    private double harga;
     private String metodePembayaran;
     private String statusPembayaran;
 
     public Booking(String idBooking,
                    String idPeserta,
                    String idJadwal,
-                   double harga,
                    String metodePembayaran,
                    String statusPembayaran) {
 
         this.idBooking = idBooking;
         this.idPeserta = idPeserta;
         this.idJadwal = idJadwal;
-        this.harga = harga;
         this.metodePembayaran = metodePembayaran;
         this.statusPembayaran = statusPembayaran;
     }
@@ -34,10 +31,6 @@ public class Booking {
 
     public String getIdJadwal() {
         return idJadwal;
-    }
-
-    public double getHarga() {
-        return harga;
     }
 
     public String getMetodePembayaran() {
@@ -58,10 +51,6 @@ public class Booking {
 
     public void setIdJadwal(String idJadwal) {
         this.idJadwal = idJadwal;
-    }
-
-    public void setHarga(double harga) {
-        this.harga = harga;
     }
 
     public void setMetodePembayaran(String metodePembayaran) {

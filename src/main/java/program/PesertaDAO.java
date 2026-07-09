@@ -3,6 +3,8 @@ package program;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 
@@ -93,6 +95,31 @@ public class PesertaDAO {
             return false;
         }
 
+    }
+
+    public List<Peserta> ambilSemuaPesertaObjek() {
+        List<Peserta> daftarPeserta = new ArrayList<>();
+        Connection con = Koneksi.getKoneksi();
+
+        try {
+            String sql = "SELECT id_peserta, nama_lengkap, nama_panggilan, no_hp FROM peserta ORDER BY id_peserta";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                daftarPeserta.add(new Peserta(
+                        rs.getString("id_peserta"),
+                        rs.getString("nama_lengkap"),
+                        rs.getString("nama_panggilan"),
+                        rs.getString("no_hp")
+                ));
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Gagal mengambil daftar peserta!", "Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println(e.getMessage());
+        }
+
+        return daftarPeserta;
     }
 
     // ==========================

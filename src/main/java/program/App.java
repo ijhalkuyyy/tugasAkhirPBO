@@ -10,6 +10,7 @@ public class App {
         PesertaUI pesertaUI = new PesertaUI();
         KelasUI kelasUI = new KelasUI();
         JadwalUI jadwalUI = new JadwalUI();
+        BookingUI bookingUI = new BookingUI();
         boolean running = true;
         do {
             int pilih = 0;
@@ -29,8 +30,10 @@ public class App {
                         "========JADWAL========\n" +
                         "7. Input tambah Jadwal\n" +
                         "8. Tampil Data Jadwal\n" +
-                        "9. Ubah Jadwal\n" +
-                        "10. Keluar\n\n" +
+                        "9. Ubah Jadwal\n\n" +
+                        "========BOOKING========\n" +
+                        "10. Tambah Booking\n" +
+                        "11. Keluar\n\n" +
                         "Pilihan : "
                     );
 
@@ -59,7 +62,8 @@ public class App {
                 case 7: jadwalUI.inputDataJadwal(); break;
                 case 8: jadwalUI.tampilDataJadwal(); break;
                 case 9: jadwalUI.ubahJadwal(); break;
-                case 10: running = false; break;
+                case 10: bookingUI.tambahBooking(); break;
+                case 11: running = false; break;
             }
         } while(running);
     }

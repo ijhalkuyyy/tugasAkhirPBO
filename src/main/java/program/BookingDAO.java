@@ -82,11 +82,10 @@ public class BookingDAO {
                 (id_booking,
                 id_peserta,
                 id_jadwal,
-                harga,
                 metode_pembayaran,
                 status_pembayaran)
 
-                VALUES (?,?,?,?,?,?)
+                VALUES (?,?,?,?,?)
                 """;
 
             PreparedStatement ps = con.prepareStatement(sql);
@@ -94,9 +93,8 @@ public class BookingDAO {
             ps.setString(1, booking.getIdBooking());
             ps.setString(2, booking.getIdPeserta());
             ps.setString(3, booking.getIdJadwal());
-            ps.setDouble(4, booking.getHarga());
-            ps.setString(5, booking.getMetodePembayaran());
-            ps.setString(6, booking.getStatusPembayaran());
+            ps.setString(4, booking.getMetodePembayaran());
+            ps.setString(5, booking.getStatusPembayaran());
 
             return ps.executeUpdate() > 0;
 
@@ -108,10 +106,6 @@ public class BookingDAO {
 
         }
     }
-
-    // public Booking cariById(String idBooking){
-        
-    // }
 
     public boolean ubahStatusPembayaran(String idBooking){
         Connection con = Koneksi.getKoneksi();
