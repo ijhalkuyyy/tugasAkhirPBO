@@ -26,7 +26,7 @@ public class PesertaDAO {
                 return "";
             }
 
-            String format = "%-10s %-25s %-20s %-15s\n";
+            String format = "%-10s %-20s %-20s %-15s\n";
 
             hasil.append(String.format(format,
                     "ID",

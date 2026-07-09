@@ -10,7 +10,7 @@ import javax.swing.JOptionPane;
 
 public class KelasDAO {
 
-    // ===================================================
+   // ===================================================
     // TAMPIL SEMUA KELAS
     // ===================================================
     public String tampilSemuaKelas() {
@@ -116,7 +116,6 @@ public class KelasDAO {
 
         return daftarKelas;
     }
-
     // ===================================================
     // CARI BERDASARKAN ID
     // ===================================================
@@ -194,7 +193,7 @@ public class KelasDAO {
         Connection conn = Koneksi.getKoneksi();
         String id = "";
         try {
-            String clean = namaKelas == null ? "" : namaKelas.trim().replaceAll("\\s+", "").toUpperCase();
+            String clean = namaKelas == null ? "" : namaKelas.trim().replaceAll("\s+", "").toUpperCase();
             String bol = clean.length() >= 3 ? clean.substring(0,3) : clean;
             if (bol.isEmpty()) bol = "XXX";
             String prefix = "BC-" + bol + "-";

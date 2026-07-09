@@ -67,7 +67,6 @@ public class App {
                 case 4: tambahKelas(); break;
                 case 5: tampilDataKelas(); break;
                 case 6: ubahHargaKelas(); break;
-                //case 6: lapPeserta(); break;
                 case 7: running = false; break;
                 case 8: inputDataJadwal(); break;
                 case 9: tampilDataJadwal(); break;
@@ -76,13 +75,6 @@ public class App {
             }
         } while(running);
     }
-    // public static void Main(String[] args) {
-        
-
-    // }
-
-
-
 
     // MENU PESERTA
     static void tampilDataPeserta() {
@@ -92,7 +84,12 @@ public class App {
         }else {
             JTextArea textArea = new JTextArea(dataPeserta);
             textArea.setEditable(false);
-            JOptionPane.showMessageDialog(null, textArea, "Data Peserta", JOptionPane.INFORMATION_MESSAGE);
+            textArea.setFont(new Font("Monospaced", Font.PLAIN, 14)); 
+            textArea.setMargin(new Insets(10, 10, 10, 10));
+            JScrollPane scrollPane = new JScrollPane(textArea);
+            scrollPane.setPreferredSize(new Dimension(600, 300));
+            JOptionPane.showMessageDialog(null, scrollPane, "Data Kelas", JOptionPane.INFORMATION_MESSAGE);
+            //tampilkanScroll(dataPeserta, "Data Peserta");
         }
     }
 
@@ -126,17 +123,15 @@ public class App {
         }
     }
 
-
-
     // MENU KELAS
     static void tampilDataKelas() {
         String dataKelas = kelasDAO.tampilSemuaKelas();
         if(dataKelas.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Tidak ada data kelas.");
         }else {
-            JTextArea textArea = new JTextArea(dataKelas);
-            textArea.setEditable(false);
-            JOptionPane.showMessageDialog(null, textArea, "Data Kelas", JOptionPane.INFORMATION_MESSAGE);
+           tampilkanScroll(dataKelas, "Data Kelas");
+            // JTextArea textArea = new JTextArea(dataKelas);
+            // textArea.setEditable(false);
         }
     }
 
@@ -198,9 +193,6 @@ public class App {
         kelasDAO.tambahKelas(kelas);
     }
 
-
-
-
     // MENU JADWAL
     static void tampilDataJadwal() {
         String dataJadwal = jadwaldao.tampilSemuaJadwal();
@@ -212,7 +204,6 @@ public class App {
             JOptionPane.showMessageDialog(null, textArea, "Data Jadwal", JOptionPane.INFORMATION_MESSAGE);
         }
     }
-
 
     static void inputDataJadwal() {
         List<Kelas> daftarKelas = kelasDAO.ambilSemuaKelasObjek();
@@ -310,8 +301,63 @@ public class App {
         }
     }
 
+    public static void tampilkanScroll(String teks, String judul) {
+        JTextArea textArea = new JTextArea(teks);
+        textArea.setEditable(false);
+        textArea.setFont(new Font("Monospaced", Font.PLAIN, 14)); 
+        textArea.setMargin(new Insets(10, 10, 10, 10));
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        scrollPane.setPreferredSize(new Dimension(600, 300));
+        JOptionPane.showMessageDialog(null, scrollPane, judul, JOptionPane.INFORMATION_MESSAGE);
+        // JTextArea area = new JTextArea(teks, 20, 80);
+        // area.setFont(new java.awt.Font(java.awt.Font.MONOSPACED, java.awt.Font.PLAIN, 12));
+        // area.setEditable(false);
+        // area.setCaretPosition(0);
+        // JScrollPane scroll = new JScrollPane(area);
+        // scroll.setPreferredSize(new java.awt.Dimension(800, 300));
+        // JOptionPane.showMessageDialog(null, scroll, judul, JOptionPane.INFORMATION_MESSAGE);
+    }
 
+    public static String inputNonEmpty(String message) {
+        String input;
+        do {
+            input = JOptionPane.showInputDialog(message);
+            if (input == null) System.exit(0);
+        } while (input.trim().isEmpty());
+        return input.trim();
+    }
 
+    public static double inputDouble(String message) {
+        String input;
+        double value = 0;
+        boolean valid = false;
+        do {
+            input = inputNonEmpty(message);
+            try {
+                value = Double.parseDouble(input);
+                valid = true;
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "Input harus angka. Silakan coba lagi.");
+            }
+        } while (!valid);
+        return value;
+    }
+
+    public static int inputInt(String message) {
+        String input;
+        int value = 0;
+        boolean valid = false;
+        do {
+            input = inputNonEmpty(message);
+            try {
+                value = Integer.parseInt(input);
+                valid = true;
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "Input harus angka bulat. Silakan coba lagi.");
+            }
+        } while (!valid);
+        return value;
+    }
     
 
 
