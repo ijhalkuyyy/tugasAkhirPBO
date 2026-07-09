@@ -2,7 +2,6 @@ package program;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ItemEvent;
 import java.util.List;
 
 public class BookingUI {
@@ -14,7 +13,6 @@ public class BookingUI {
 
     void tambahBooking() {
         List<Peserta> daftarPeserta = pesertaDAO.ambilSemuaPesertaObjek();
-        List<Kelas> daftarKelas = kelasDAO.ambilSemuaKelasObjek();
         List<Jadwal> daftarJadwal = jadwalDAO.ambilSemuaJadwalObjek();
 
         if (daftarPeserta.isEmpty()) {
@@ -22,32 +20,29 @@ public class BookingUI {
             return;
         }
 
-        if (daftarKelas.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Belum ada data kelas. Tambah kelas terlebih dahulu.");
+        if (daftarJadwal.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Belum ada data jadwal. Tambah jadwal terlebih dahulu.");
             return;
         }
 
         JPanel panel = new JPanel(new GridLayout(0, 1, 8, 8));
 
-        JLabel lblPeserta = new JLabel("Pilih peserta:");
+        JLabel lblPeserta = new JLabel("Pilih nama peserta:");
         JComboBox<ComboItem> comboPeserta = new JComboBox<>();
         for (Peserta peserta : daftarPeserta) {
-            comboPeserta.addItem(new ComboItem(peserta.getIdPeserta(),
-                    peserta.getNamaLengkap() + " (" + peserta.getIdPeserta() + ")"));
-        }
-
-        JLabel lblKelas = new JLabel("Pilih kelas:");
-        JComboBox<ComboItem> comboKelas = new JComboBox<>();
-        for (Kelas kelas : daftarKelas) {
-            comboKelas.addItem(new ComboItem(kelas.getIdKelas(),
-                    kelas.getNamaKelas() + " (" + kelas.getIdKelas() + ")"));
+            comboPeserta.addItem(new ComboItem(
+                    peserta.getIdPeserta(),
+                    peserta.getNamaLengkap() + " (" + peserta.getIdPeserta() + ")"
+            ));
         }
 
         JLabel lblJadwal = new JLabel("Pilih jadwal:");
         JComboBox<ComboItem> comboJadwal = new JComboBox<>();
         for (Jadwal jadwal : daftarJadwal) {
-            comboJadwal.addItem(new ComboItem(jadwal.getIdJadwal(),
-                    jadwal.getTanggalMulai() + " (" + jadwal.getIdJadwal() + ")"));
+            comboJadwal.addItem(new ComboItem(
+                    jadwal.getIdJadwal(),
+                    jadwal.getKelas().getNamaKelas() + " | Mulai: " + jadwal.getTanggalMulai() + " | Sesi: " + jadwal.getSesiKe()
+            ));
         }
 
         JLabel lblStatusPembayaran = new JLabel("Status pembayaran:");
@@ -56,29 +51,14 @@ public class BookingUI {
         JLabel lblMetodePembayaran = new JLabel("Metode pembayaran:");
         JComboBox<String> comboMetodePembayaran = new JComboBox<>(new String[]{"Cash", "Transfer"});
 
-        comboKelas.addItemListener(e -> {
-            if (e.getStateChange() == ItemEvent.SELECTED) {
-                ComboItem itemKelas = (ComboItem) comboKelas.getSelectedItem();
-                if (itemKelas != null) {
-                    isiJadwalCombo(comboJadwal, itemKelas.getId());
-                }
-            }
-        });
-
         panel.add(lblPeserta);
         panel.add(comboPeserta);
-        panel.add(lblKelas);
-        panel.add(comboKelas);
         panel.add(lblJadwal);
         panel.add(comboJadwal);
         panel.add(lblStatusPembayaran);
         panel.add(comboStatusPembayaran);
         panel.add(lblMetodePembayaran);
         panel.add(comboMetodePembayaran);
-
-        if (comboKelas.getItemCount() > 0) {
-            comboKelas.setSelectedIndex(0);
-        }
 
         int hasil = JOptionPane.showConfirmDialog(null, panel, "Tambah Booking", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
@@ -87,17 +67,10 @@ public class BookingUI {
         }
 
         ComboItem pesertaTerpilih = (ComboItem) comboPeserta.getSelectedItem();
-        ComboItem kelasTerpilih = (ComboItem) comboKelas.getSelectedItem();
         ComboItem jadwalTerpilih = (ComboItem) comboJadwal.getSelectedItem();
 
-        if (pesertaTerpilih == null || kelasTerpilih == null || jadwalTerpilih == null || jadwalTerpilih.getId().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Pilih peserta, kelas, dan jadwal terlebih dahulu.");
-            return;
-        }
-
-        Kelas kelasDipilih = kelasDAO.cariById(kelasTerpilih.getId());
-        if (kelasDipilih == null) {
-            JOptionPane.showMessageDialog(null, "Kelas yang dipilih tidak ditemukan.");
+        if (pesertaTerpilih == null || jadwalTerpilih == null || jadwalTerpilih.getId().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Pilih peserta dan jadwal terlebih dahulu.");
             return;
         }
 
@@ -122,23 +95,6 @@ public class BookingUI {
             JOptionPane.showMessageDialog(null, "Booking berhasil ditambahkan dengan ID " + idBooking + ".");
         } else {
             JOptionPane.showMessageDialog(null, "Gagal menambahkan booking.");
-        }
-    }
-
-    private void isiJadwalCombo(JComboBox<ComboItem> comboJadwal, String idKelas) {
-        comboJadwal.removeAllItems();
-        List<Jadwal> daftarJadwal = jadwalDAO.ambilJadwalByKelas(idKelas);
-
-        if (daftarJadwal.isEmpty()) {
-            comboJadwal.addItem(new ComboItem("", "Tidak ada jadwal"));
-            return;
-        }
-
-        for (Jadwal jadwal : daftarJadwal) {
-            comboJadwal.addItem(new ComboItem(
-                    jadwal.getIdJadwal(),
-                    "Jadwal " + jadwal.getIdJadwal() + " - " + jadwal.getTanggalMulai()
-            ));
         }
     }
 
