@@ -17,23 +17,22 @@ public class App {
                     String inputMenu = JOptionPane.showInputDialog(
                         "MENU SISTEM\n\n" +
                         "========Peserta========\n" +
-                        "1. Input Data Peserta\n" +
-                        "2. Tampil Data Peserta\n" +
-                        "3. Cari Data Peserta ID\n\n" +
+                        "1. Tampil Data Peserta\n" +
+                        "2. Cari Data Peserta ID\n\n" +
                         "========Kelas========\n" +
-                        "4. Input Kelas\n" +
-                        "5. Tampil Data Kelas\n" +
-                        "6. Ubah Harga Kelas\n\n" +
+                        "3. Input Kelas\n" +
+                        "4. Tampil Data Kelas\n" +
+                        "5. Ubah Harga Kelas\n\n" +
                         "========JADWAL========\n" +
-                        "7. Input tambah Jadwal\n" +
-                        "8. Tampil Data Jadwal\n" +
-                        "9. Ubah Jadwal\n" +
-                        "10. Nonaktifkan Jadwal Aktif\n\n" +
+                        "6. Input tambah Jadwal\n" +
+                        "7. Tampil Data Jadwal\n" +
+                        "8. Ubah Jadwal\n" +
+                        "9. Nonaktifkan Jadwal Aktif\n\n" +
                         "========BOOKING========\n" +
-                        "11. Tambah Booking\n" +
-                        "12. Ubah Status Pembayaran\n" +
-                        "13. Tampil Data Transaksi\n" +
-                        "14. Keluar\n\n" +
+                        "10. Tambah Booking\n" +
+                        "11. Ubah Status Pembayaran\n" +
+                        "12. Tampil Data Transaksi\n" +
+                        "13. Keluar\n\n" +
                         "Pilihan : "
                     );
 
@@ -42,7 +41,7 @@ public class App {
                     }
 
                     pilih = Integer.parseInt(inputMenu);
-                    if (pilih >= 1 && pilih <= 14) {
+                    if (pilih >= 1 && pilih <= 13) {
                         putar = false;
                     } else {
                         JOptionPane.showMessageDialog(null, "Masukkan pilihan 1-13.");
@@ -53,20 +52,19 @@ public class App {
             } while (putar);
 
             switch(pilih) {
-                case 1: pesertaUI.inputDataPeserta();break;
-                case 2: pesertaUI.tampilDataPeserta(); break;
-                case 3: pesertaUI.cariDataPesertaBerdasarkanID(); break;
-                case 4: kelasUI.tambahKelas(); break;
-                case 5: kelasUI.tampilDataKelas(); break;
-                case 6: kelasUI.ubahHargaKelas(); break;
-                case 7: jadwalUI.inputDataJadwal(); break;
-                case 8: jadwalUI.tampilDataJadwal(); break;
-                case 9: jadwalUI.ubahJadwal(); break;
-                case 10: jadwalUI.ubahStatusJadwalMenjadiNonaktif(); break;
-                case 11: bookingUI.tambahBooking(); break;
-                case 12: bookingUI.ubahStatusPembayaran(); break;
-                case 13: bookingUI.tampilDataTransaksi(); break;
-                case 14: running = false; break;
+                case 1: pesertaUI.tampilDataPeserta(); break;
+                case 2: pesertaUI.cariDataPesertaBerdasarkanID(); break;
+                case 3: kelasUI.tambahKelas(); break;
+                case 4: kelasUI.tampilDataKelas(); break;
+                case 5: kelasUI.ubahHargaKelas(); break;
+                case 6: jadwalUI.inputDataJadwal(); break;
+                case 7: jadwalUI.tampilDataJadwal(); break;
+                case 8: jadwalUI.ubahJadwal(); break;
+                case 9: jadwalUI.ubahStatusJadwalMenjadiNonaktif(); break;
+                case 10: bookingUI.tambahBooking(); break;
+                case 11: bookingUI.ubahStatusPembayaran(); break;
+                case 12: bookingUI.tampilDataTransaksi(); break;
+                case 13: running = false; break;
                 // case 12: running = false; break;
             }
         } while(running);

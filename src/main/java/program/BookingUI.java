@@ -20,17 +20,36 @@ public class BookingUI {
 
     private final BookingDAO bookingDAO = new BookingDAO();
     private final PesertaDAO pesertaDAO = new PesertaDAO();
+    private final PesertaUI pesertaUI = new PesertaUI();
     private final KelasDAO kelasDAO = new KelasDAO();
     private final JadwalDAO jadwalDAO = new JadwalDAO();
 
     void tambahBooking() {
-        List<Peserta> daftarPeserta = pesertaDAO.ambilSemuaPesertaObjek();
-        List<Jadwal> daftarJadwal = jadwalDAO.ambilJadwalAktifObjek();
+        String[] opsiStatusPeserta = {"Sudah pernah daftar", "Belum pernah daftar"};
+        JComboBox<String> comboStatusPeserta = new JComboBox<>(opsiStatusPeserta);
+        int hasilStatusPeserta = JOptionPane.showConfirmDialog(
+                null,
+                comboStatusPeserta,
+                "Status Peserta",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+        );
 
+        if (hasilStatusPeserta != JOptionPane.OK_OPTION) {
+            return;
+        }
+
+        if ("Belum pernah daftar".equals(comboStatusPeserta.getSelectedItem())) {
+            pesertaUI.inputDataPeserta();
+        }
+
+        List<Peserta> daftarPeserta = pesertaDAO.ambilSemuaPesertaObjek();
         if (daftarPeserta.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Belum ada data peserta. Tambah peserta terlebih dahulu.");
             return;
         }
+
+        List<Jadwal> daftarJadwal = jadwalDAO.ambilJadwalAktifObjek();
 
         if (daftarJadwal.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Belum ada jadwal aktif. Tambah atau aktifkan jadwal terlebih dahulu.");
