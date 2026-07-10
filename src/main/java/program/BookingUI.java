@@ -180,7 +180,18 @@ public class BookingUI {
         if (dataTransaksi.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Tidak ada data transaksi untuk filter tersebut.");
         } else {
-            tampilkanScroll(dataTransaksi, "Data Transaksi");
+            double totalHargaMasuk = 0;
+            List<Booking> daftarBooking = bookingDAO.ambilSemuaBookingObjek();
+            for (Booking booking : daftarBooking) {
+                boolean cocokFilter = statusFilter == null || statusFilter.equalsIgnoreCase(booking.getStatusPembayaran());
+                if (cocokFilter) {
+                    totalHargaMasuk += booking.getHarga();
+                }
+            }
+
+            String ringkasanTransaksi = dataTransaksi
+                    + "\n\nTotal Harga Masuk: Rp " + String.format("%,.0f", totalHargaMasuk);
+            tampilkanScroll(ringkasanTransaksi, "Data Transaksi");
         }
     }
 

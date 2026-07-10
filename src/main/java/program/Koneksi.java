@@ -2,7 +2,6 @@ package program;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
 
 public class Koneksi {
     public static Connection getKoneksi() {
@@ -10,7 +9,7 @@ public class Koneksi {
             Class.forName("com.mysql.cj.jdbc.Driver");
 
             return DriverManager.getConnection(
-                    "jdbc:mysql://localhost/tugas_akhir_pbo",
+                    "jdbc:mysql://localhost/onty_cake",
                     "root",
                     "");
         } catch (Exception e) {

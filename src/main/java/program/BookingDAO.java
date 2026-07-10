@@ -59,7 +59,7 @@ public class BookingDAO {
                     //"ID KLS",
                     "NAMA KELAS/SESI",
                     "TGL MULAI",
-                    "HARGA",
+                    "Total Bayar",
                     "METODE",
                     "STATUS"));
 
@@ -173,8 +173,9 @@ public class BookingDAO {
         try {
             String sql = """
                 UPDATE booking
-                SET status_pembayaran='Lunas'
-                WHERE id_booking=?
+                SET status_pembayaran = 'Lunas',
+                    harga = harga * 2
+                WHERE id_booking = ?
                 """;
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setString(1, idBooking);
