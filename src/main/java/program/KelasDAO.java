@@ -30,9 +30,10 @@ public class KelasDAO {
                 return "";
             }
 
-            String format = "%-10s %-25s %-15s %-12s\n";
+            String format = "%-4s %-10s %-25s %-15s %-12s\n";
 
             hasil.append(String.format(format,
+                    "NO",
                     "ID",
                     "NAMA KELAS",
                     "HARGA",
@@ -40,9 +41,10 @@ public class KelasDAO {
 
             hasil.append("====================================================================\n");
 
+            int no = 1;
             do {
-
                 hasil.append(String.format(format,
+                        no++,
                         rs.getString("id_kelas"),
                         rs.getString("nama_kelas"),
                         rs.getInt("harga"),
@@ -81,6 +83,7 @@ public class KelasDAO {
             ps.setInt(4, kelas.getKapasitas());
             int hasil = ps.executeUpdate();
 
+            JOptionPane.showMessageDialog(null, "Berhasil menyimpan data kelas", "Input Berhasil", JOptionPane.INFORMATION_MESSAGE);
             return hasil > 0;
 
         } catch (Exception e) {

@@ -14,10 +14,8 @@ public class PesertaDAO {
     // TAMPIL SEMUA PESERTA
     // ==========================
     public String tampilSemuaPeserta() {
-
         Connection con = Koneksi.getKoneksi();
         StringBuilder hasil = new StringBuilder();
-
         try {
 
             String sql = "SELECT * FROM peserta ORDER BY id_peserta DESC";
@@ -28,9 +26,10 @@ public class PesertaDAO {
                 return "";
             }
 
-            String format = "%-10s %-20s %-20s %-15s\n";
+            String format = "%-4s %-10s %-20s %-20s %-15s\n";
 
             hasil.append(String.format(format,
+                    "NO",
                     "ID",
                     "NAMA",
                     "PANGGILAN",
@@ -38,9 +37,10 @@ public class PesertaDAO {
 
             hasil.append("====================================================================\n");
 
+            int no = 1;
             do {
-
                 hasil.append(String.format(format,
+                        no++,
                         rs.getString("id_peserta"),
                         rs.getString("nama_lengkap"),
                         rs.getString("nama_panggilan"),

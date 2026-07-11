@@ -18,6 +18,7 @@ import javax.swing.JTextArea;
 public class JadwalUI {
 
     JadwalDAO jadwaldao = new JadwalDAO();
+    BookingDAO bookingdao = new BookingDAO();
     KelasUI kelasUI = new KelasUI();
     Validasi val =  new Validasi();
 
@@ -153,6 +154,31 @@ public class JadwalUI {
 
         String selectedJadwal = (String) comboBoxJadwal.getSelectedItem();
         String idJadwal = selectedJadwal != null ? selectedJadwal.split(" - ")[0] : "";
+
+        // =========================================================
+        // LOGIKA BARU: CEK APAKAH ADA PESERTA YANG MASIH DP
+        // =========================================================
+        boolean adaYangDP = false;
+        
+        // Panggil list semua booking dari DAO
+        List<Booking> daftarBooking = bookingdao.ambilSemuaBookingObjek(); 
+        
+        for (Booking booking : daftarBooking) {
+            if (booking.getIdJadwal().equals(idJadwal)) {
+                if (booking.getStatusPembayaran().equalsIgnoreCase("DP 50%")) {
+                    adaYangDP = true;
+                    break;
+                }
+            }
+        }
+
+        if (adaYangDP) {
+            JOptionPane.showMessageDialog(null, 
+                "Jadwal tidak bisa dinonaktifkan!\nMasih ada transaksi peserta yang statusnya DP (Belum Lunas).", 
+                "Peringatan", 
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
         boolean berhasil = jadwaldao.ubahStatusJadwalMenjadiNonaktif(idJadwal);
         if (berhasil) {

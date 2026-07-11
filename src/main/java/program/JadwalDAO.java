@@ -39,9 +39,10 @@ class JadwalDAO{
                 return "";
             }
 
-            String format = "%-12s %-18s %-18s %-18s %-8s\n";
+            String format = "%-4s %-12s %-18s %-18s %-18s %-8s\n";
 
             hasil.append(String.format(format,
+                "NO",
                     "ID",
                     "KELAS",
                     "TANGGAL MULAI",
@@ -50,10 +51,10 @@ class JadwalDAO{
 
             hasil.append("=====================================================================================\n");
 
+            int no = 1;
             do {
-
                 hasil.append(String.format(format,
-
+                        no++,
                         rs.getString("id_jadwal"),
                         rs.getString("nama_kelas"),
                         rs.getString("tanggal_mulai"),

@@ -71,9 +71,17 @@ public class PesertaUI {
         boolean putar = true;
         String idPeserta = "";
         do{
-            idPeserta = JOptionPane.showInputDialog(null, tampilanPesan, "Ubah Harga Kelas", JOptionPane.PLAIN_MESSAGE);
+            idPeserta = JOptionPane.showInputDialog(null, tampilanPesan, "Tampilkan Peserta", JOptionPane.PLAIN_MESSAGE);
 
-            // String id = inputNonEmpty("Masukkan ID Peserta");
+            if (idPeserta == null) {
+                putar = false; 
+                break;      
+            }
+
+            if (idPeserta.trim().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "ID Peserta tidak boleh kosong!");
+                continue;
+            }
             
             Peserta peserta = pesertaDAO.cariById(idPeserta);
             if (peserta != null) {

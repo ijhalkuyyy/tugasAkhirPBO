@@ -31,8 +31,10 @@ public class App {
                         "========= BOOKING =========\n" +
                         "10. Tambah Booking\n" +
                         "11. Ubah Status Pembayaran\n" +
-                        "12. Tampil Data Transaksi\n" +
-                        "13. Keluar\n\n" +
+                        "12. Tampil Data Transaksi Aktif\n" +
+                        "13. Tampil Data Transkasi per Jadwal\n" +
+                        //"14. Tampil Rekap Transkasi\n" +
+                        "14. Keluar\n\n" +
                         "Pilihan : "
                     );
 
@@ -41,10 +43,10 @@ public class App {
                     }
 
                     pilih = Integer.parseInt(inputMenu);
-                    if (pilih >= 1 && pilih <= 13) {
+                    if (pilih >= 1 && pilih <= 14) {
                         putar = false;
                     } else {
-                        JOptionPane.showMessageDialog(null, "Masukkan pilihan 1-13.");
+                        JOptionPane.showMessageDialog(null, "Masukkan pilihan 1-14.");
                     }
                 } catch (NumberFormatException e) {
                     JOptionPane.showMessageDialog(null, "Masukkan angka yang valid!");
@@ -64,7 +66,12 @@ public class App {
                 case 10: bookingUI.tambahBooking(); break;
                 case 11: bookingUI.ubahStatusPembayaran(); break;
                 case 12: bookingUI.tampilDataTransaksi(); break;
-                case 13: running = false; break;
+                case 13: bookingUI.tampilTransaksiPerKelasDanStatus(); break;
+                //case 14: bookingUI.tampilSemuaRekapTransaksi(); break;
+                case 14: 
+                    running = false; 
+                    JOptionPane.showMessageDialog(null, "Happiness In Every Moment", "Thank You!", JOptionPane.INFORMATION_MESSAGE);
+                    break;
             }
         } while(running);
     }

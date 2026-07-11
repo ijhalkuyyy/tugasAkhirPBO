@@ -35,10 +35,11 @@ public class BookingDAO {
                     ON b.id_jadwal = j.id_jadwal
                 JOIN kelas k
                     ON j.id_kelas = k.id_kelas
+                    WHERE j.status = 'a'
                 """);
 
             if (statusPembayaran != null && !statusPembayaran.isBlank()) {
-                sql.append(" WHERE b.status_pembayaran = ?");
+                sql.append(" AND b.status_pembayaran = ?");
             }
             sql.append(" ORDER BY b.id_booking DESC");
 
@@ -80,12 +81,134 @@ public class BookingDAO {
                         rs.getString("status_pembayaran")
                 ));
             } while (rs.next());
-
         } catch (Exception e) {
             return "Error : " + e.getMessage();
         }
         return hasil.toString();
 
+    }
+
+    public String tampilSemuaRekapTransaksi() { 
+        Connection con = Koneksi.getKoneksi();
+        StringBuilder hasil = new StringBuilder();
+        try {
+            String sql = """
+                SELECT
+                    b.id_booking,
+                    p.id_peserta,
+                    p.nama_lengkap,
+                    k.id_kelas,
+                    k.nama_kelas,
+                    j.id_jadwal,
+                    j.tanggal_mulai,
+                    j.sesi_ke,
+                    b.harga,
+                    b.metode_pembayaran,
+                    b.status_pembayaran
+                FROM booking b
+                JOIN peserta p
+                    ON b.id_peserta = p.id_peserta
+                JOIN jadwal j
+                    ON b.id_jadwal = j.id_jadwal
+                JOIN kelas k
+                    ON j.id_kelas = k.id_kelas
+                ORDER BY b.id_booking DESC
+                """;
+
+            PreparedStatement ps = con.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            
+            if (!rs.next()) {
+                return "";
+            }
+            
+            String format = "%-4s %-12s %-20s %-28s %-12s %-12s %-12s %-10s\n";
+            hasil.append(String.format(format,
+                    "NO",
+                    "ID BOOKING",
+                    "NAMA PESERTA",
+                    "NAMA KELAS/SESI",
+                    "TGL MULAI",
+                    "Total Bayar",
+                    "METODE",
+                    "STATUS"));
+
+            hasil.append("================================================================================================================\n");
+            int no = 1;
+            do {
+                hasil.append(String.format(format,
+                        no++,
+                        rs.getString("id_booking"),
+                        rs.getString("nama_lengkap"),
+                        rs.getString("nama_kelas") + " (Sesi " + rs.getInt("sesi_ke") + ")",
+                        rs.getString("tanggal_mulai"),
+                        String.format("%.0f", rs.getDouble("harga")),
+                        rs.getString("metode_pembayaran"),
+                        rs.getString("status_pembayaran")
+                ));
+            } while (rs.next());
+
+        } catch (Exception e) {
+            return "Error : " + e.getMessage();
+        }
+        return hasil.toString();
+    }
+
+    public String tampilTransaksiBerdasarkanJadwal(String idJadwal) {
+        Connection con = Koneksi.getKoneksi();
+        StringBuilder hasil = new StringBuilder();
+        try {
+            String sql = """
+                SELECT 
+                    b.id_booking, 
+                    p.nama_lengkap, 
+                    k.nama_kelas, 
+                    j.tanggal_mulai, 
+                    j.sesi_ke, 
+                    b.harga, 
+                    b.metode_pembayaran, 
+                    b.status_pembayaran 
+                FROM booking b 
+                JOIN peserta p ON b.id_peserta = p.id_peserta 
+                JOIN jadwal j ON b.id_jadwal = j.id_jadwal 
+                JOIN kelas k ON j.id_kelas = k.id_kelas 
+                WHERE j.id_jadwal = ? 
+                ORDER BY b.id_booking DESC
+                """;
+
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, idJadwal);
+            ResultSet rs = ps.executeQuery();
+
+            if (!rs.next()) {
+                return "";
+            }
+
+            String format = "%-4s %-12s %-20s %-28s %-12s %-12s %-12s %-10s\n";
+            hasil.append(String.format(format,
+                    "NO", "ID BOOKING", "NAMA PESERTA", "NAMA KELAS/SESI",
+                    "TGL MULAI", "Total Bayar", "METODE", "STATUS"));
+
+            hasil.append("================================================================================================================\n");
+            
+            int no = 1;
+            do {
+                hasil.append(String.format(format,
+                        no++,
+                        rs.getString("id_booking"),
+                        rs.getString("nama_lengkap"),
+                        rs.getString("nama_kelas") + " (Sesi " + rs.getInt("sesi_ke") + ")",
+                        rs.getString("tanggal_mulai"),
+                        String.format("%.0f", rs.getDouble("harga")),
+                        rs.getString("metode_pembayaran"),
+                        rs.getString("status_pembayaran")
+                ));
+            } while (rs.next());
+
+        } catch (Exception e) {
+            return "Error : " + e.getMessage();
+        }
+        return hasil.toString();
     }
 
     public boolean cekBookingDuplikat(String idPeserta, String idJadwal) {
@@ -209,4 +332,40 @@ public class BookingDAO {
         return id;
     }
 
+    public List<String[]> ambilDataKelasUntukCombo() {
+        List<String[]> list = new ArrayList<>();
+        Connection con = Koneksi.getKoneksi();
+        try {
+            String sql = "SELECT id_kelas, nama_kelas FROM kelas ORDER BY nama_kelas ASC";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(new String[]{rs.getString("id_kelas"), rs.getString("nama_kelas")});
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public List<String[]> ambilDataJadwalUntukCombo(String idKelas, String statusJadwal) {
+        List<String[]> list = new ArrayList<>();
+        Connection con = Koneksi.getKoneksi();
+        try {
+            String sql = "SELECT id_jadwal, tanggal_mulai, sesi_ke FROM jadwal WHERE id_kelas = ? AND status = ? ORDER BY tanggal_mulai ASC";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, idKelas);
+            ps.setString(2, statusJadwal);
+            ResultSet rs = ps.executeQuery();
+            
+            while (rs.next()) {
+                String idJadwal = rs.getString("id_jadwal");
+                String label = rs.getString("tanggal_mulai") + " (Sesi " + rs.getInt("sesi_ke") + ")";
+                list.add(new String[]{idJadwal, label});
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 }

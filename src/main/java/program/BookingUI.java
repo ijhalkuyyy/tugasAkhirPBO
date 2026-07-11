@@ -195,6 +195,119 @@ public class BookingUI {
         }
     }
 
+    void tampilSemuaRekapTransaksi() {
+        String dataTransaksi =  bookingDAO.tampilSemuaRekapTransaksi();
+        if(dataTransaksi.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Tidak ada data peserta.");
+        }else {
+            double totalHargaMasuk = 0;
+            List<Booking> daftarBooking = bookingDAO.ambilSemuaBookingObjek();
+            for (Booking booking : daftarBooking) {
+                totalHargaMasuk += booking.getHarga();
+                // boolean cocokFilter = statusFilter == null || statusFilter.equalsIgnoreCase(booking.getStatusPembayaran());
+                // if (cocokFilter) {
+                //     totalHargaMasuk += booking.getHarga();
+                // }
+            }
+            String ringkasanRekap = dataTransaksi
+                    + "\n\nTotal Harga Masuk: Rp " + String.format("%,.0f", totalHargaMasuk);
+            tampilkanScroll(ringkasanRekap, "Data Rekap");
+        }
+    }
+
+    void tampilTransaksiPerKelasDanStatus() {
+        List<String[]> daftarKelas = bookingDAO.ambilDataKelasUntukCombo(); 
+        if (daftarKelas.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Data Kelas masih kosong!");
+            return;
+        }
+
+        JComboBox<ComboItem> comboKelas = new JComboBox<>();
+        JComboBox<ComboItem> comboStatus = new JComboBox<>();
+        JComboBox<ComboItem> comboJadwal = new JComboBox<>();
+
+        for (String[] k : daftarKelas) {
+            comboKelas.addItem(new ComboItem(k[0], k[1]));
+        }
+        comboStatus.addItem(new ComboItem("a", "Aktif"));
+        comboStatus.addItem(new ComboItem("t", "Tidak Aktif"));
+
+        comboKelas.addItemListener(e -> {
+            if (e.getStateChange() == java.awt.event.ItemEvent.SELECTED) {
+                updateJadwal(comboKelas, comboStatus, comboJadwal);
+            }
+        });
+
+        comboStatus.addItemListener(e -> {
+            if (e.getStateChange() == java.awt.event.ItemEvent.SELECTED) {
+                updateJadwal(comboKelas, comboStatus, comboJadwal);
+            }
+        });
+
+        updateJadwal(comboKelas, comboStatus, comboJadwal);
+
+        javax.swing.JPanel panel = new javax.swing.JPanel();
+        panel.setLayout(new java.awt.GridLayout(6, 1, 0, 5));
+        panel.add(new javax.swing.JLabel("Pilih Kelas:"));
+        panel.add(comboKelas);
+        panel.add(new javax.swing.JLabel("Pilih Status Jadwal:"));
+        panel.add(comboStatus);
+        panel.add(new javax.swing.JLabel("Pilih Jadwal:"));
+        panel.add(comboJadwal);
+
+        int result = JOptionPane.showConfirmDialog(null, panel, 
+                "Filter Transaksi", 
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+        if (result == JOptionPane.OK_OPTION) {
+            ComboItem jadwalTerpilih = (ComboItem) comboJadwal.getSelectedItem();
+            
+            if (jadwalTerpilih == null || jadwalTerpilih.getId().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Pilih jadwal yang valid!");
+                return;
+            }
+
+            String dataTransaksi = bookingDAO.tampilTransaksiBerdasarkanJadwal(jadwalTerpilih.getId());
+
+            if (dataTransaksi.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Tidak ada transaksi di jadwal ini.");
+            } else {
+                double totalHargaMasuk = 0;
+                List<Booking> daftarBooking = bookingDAO.ambilSemuaBookingObjek(); 
+                for (Booking booking : daftarBooking) {
+                    if (booking.getIdJadwal().equals(jadwalTerpilih.getId())) { 
+                         totalHargaMasuk += booking.getHarga();
+                    }
+                }
+
+                String ringkasanTransaksi = dataTransaksi
+                        + "\n\nTotal Pendapatan Jadwal Ini: Rp " + String.format("%,.0f", totalHargaMasuk);
+                
+                tampilkanScroll(ringkasanTransaksi, "Data Transaksi Filter: " + jadwalTerpilih.toString());
+            }
+        }
+    }
+
+    private void updateJadwal(JComboBox<ComboItem> comboKelas, JComboBox<ComboItem> comboStatus, JComboBox<ComboItem> comboJadwal) {
+        comboJadwal.removeAllItems();
+        
+        ComboItem kelasTerpilih = (ComboItem) comboKelas.getSelectedItem();
+        ComboItem statusTerpilih = (ComboItem) comboStatus.getSelectedItem();
+
+        if (kelasTerpilih != null && statusTerpilih != null) {
+            // PANGGIL METHOD DENGAN 2 PARAMETER
+            List<String[]> daftarJadwal = bookingDAO.ambilDataJadwalUntukCombo(kelasTerpilih.getId(), statusTerpilih.getId());
+            
+            if (daftarJadwal.isEmpty()) {
+                comboJadwal.addItem(new ComboItem("", "-- Tidak ada jadwal --"));
+            } else {
+                for (String[] j : daftarJadwal) {
+                    comboJadwal.addItem(new ComboItem(j[0], j[1])); 
+                }
+            }
+        }
+    }
+
     void tampilkanScroll(String teks, String judul) {
         JTextArea textArea = new JTextArea(teks);
         textArea.setEditable(false);
