@@ -291,6 +291,22 @@ public class BookingDAO {
         return daftarBooking;
     }
 
+    public int hitungBookingUntukJadwal(String idJadwal) {
+        Connection con = Koneksi.getKoneksi();
+        try {
+            String sql = "SELECT COUNT(*) AS total FROM booking WHERE id_jadwal = ?";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, idJadwal);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("total");
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return 0;
+    }
+
     public boolean ubahStatusPembayaran(String idBooking){
         Connection con = Koneksi.getKoneksi();
         try {

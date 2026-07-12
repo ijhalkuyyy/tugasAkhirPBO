@@ -99,11 +99,25 @@ public class BookingUI {
 
         ComboItem pesertaTerpilih = (ComboItem) comboPeserta.getSelectedItem();
         ComboItem jadwalTerpilih = (ComboItem) comboJadwal.getSelectedItem();
-        Jadwal jadwalDipilih = jadwalDAO.cariById(jadwalTerpilih.getId());
-        double hargaKelas = jadwalDipilih.getKelas().getHarga();
 
         if (pesertaTerpilih == null || jadwalTerpilih == null || jadwalTerpilih.getId().isEmpty()) {
             JOptionPane.showMessageDialog(null, "Pilih peserta dan jadwal terlebih dahulu.");
+            return;
+        }
+
+        Jadwal jadwalDipilih = jadwalDAO.cariById(jadwalTerpilih.getId());
+        if (jadwalDipilih == null) {
+            JOptionPane.showMessageDialog(null, "Jadwal yang dipilih tidak ditemukan.");
+            return;
+        }
+
+        int kapasitasKelas = jadwalDipilih.getKelas().getKapasitas();
+        int jumlahBooking = bookingDAO.hitungBookingUntukJadwal(jadwalTerpilih.getId());
+        if (jumlahBooking >= kapasitasKelas) {
+            JOptionPane.showMessageDialog(null,
+                    "Booking tidak dapat ditambahkan karena kapasitas kelas sudah penuh (" + kapasitasKelas + " peserta).",
+                    "Kapasitas Penuh",
+                    JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -112,6 +126,8 @@ public class BookingUI {
             JOptionPane.showMessageDialog(null, "Data tidak ditambah karena peserta sudah pernah mendaftar kelas dan jadwal yang sama.");
             return;
         }
+
+        double hargaKelas = jadwalDipilih.getKelas().getHarga();
 
         double hargaBayar;
         if(comboStatusPembayaran.getSelectedItem().equals("Lunas")){

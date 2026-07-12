@@ -1,7 +1,6 @@
 package program;
 import javax.swing.JOptionPane;
 
-
 public class App {
     public static void main(String[] args) {
         PesertaUI pesertaUI = new PesertaUI();
@@ -33,7 +32,6 @@ public class App {
                         "11. Ubah Status Pembayaran\n" +
                         "12. Tampil Data Transaksi Aktif\n" +
                         "13. Tampil Data Transkasi per Jadwal\n" +
-                        //"14. Tampil Rekap Transkasi\n" +
                         "14. Keluar\n\n" +
                         "Pilihan : "
                     );
@@ -67,15 +65,12 @@ public class App {
                 case 11: bookingUI.ubahStatusPembayaran(); break;
                 case 12: bookingUI.tampilDataTransaksi(); break;
                 case 13: bookingUI.tampilTransaksiPerKelasDanStatus(); break;
-                //case 14: bookingUI.tampilSemuaRekapTransaksi(); break;
                 case 14: 
                     running = false; 
                     JOptionPane.showMessageDialog(null, "Happiness In Every Moment", "Thank You!", JOptionPane.INFORMATION_MESSAGE);
                     break;
             }
         } while(running);
-    }
-
-        
+    }      
 }
 
