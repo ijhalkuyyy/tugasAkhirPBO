@@ -73,7 +73,6 @@ public class JadwalUI {
             return;
         }
 
-        // --- VALIDASI TANGGAL MULAI ---
         LocalDate dateMulai = null;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate hariIni = LocalDate.now();
@@ -155,12 +154,9 @@ public class JadwalUI {
         String selectedJadwal = (String) comboBoxJadwal.getSelectedItem();
         String idJadwal = selectedJadwal != null ? selectedJadwal.split(" - ")[0] : "";
 
-        // =========================================================
-        // LOGIKA BARU: CEK APAKAH ADA PESERTA YANG MASIH DP
-        // =========================================================
+
         boolean adaYangDP = false;
         
-        // Panggil list semua booking dari DAO
         List<Booking> daftarBooking = bookingdao.ambilSemuaBookingObjek(); 
         
         for (Booking booking : daftarBooking) {
@@ -230,20 +226,17 @@ public class JadwalUI {
                 ? "tanggal_mulai"
                 : "tanggal_selesai";
                 
-        // --- VALIDASI FORMAT UNTUK UBAH JADWAL ---
         String tanggalBaru = null;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         
         while (true) {
             tanggalBaru = val.inputNonEmpty("Masukkan tanggal baru (YYYY-MM-DD):");
             if (tanggalBaru == null || tanggalBaru.trim().isEmpty()) {
-                return; // Batal jika user klik cancel
+                return; 
             }
             
             try {
-                LocalDate.parse(tanggalBaru, formatter); // Cek format saja
-                // Catatan: Untuk cek Tgl Mulai vs Tgl Selesai di menu Update, 
-                // kamu harus query data tanggal yang satunya lagi dari Database lewat jadwaldao.
+                LocalDate.parse(tanggalBaru, formatter);
                 break; 
             } catch (DateTimeParseException e) {
                  JOptionPane.showMessageDialog(null, "Format salah! Gunakan format YYYY-MM-DD\nContoh: 2023-10-25", "Peringatan", JOptionPane.WARNING_MESSAGE);

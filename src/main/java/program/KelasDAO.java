@@ -10,9 +10,7 @@ import java.util.List;
 import javax.swing.JOptionPane;
 
 public class KelasDAO {
-   // ===================================================
-    // TAMPIL SEMUA KELAS
-    // ===================================================
+ 
     public String tampilSemuaKelas() {
 
         Connection con = Koneksi.getKoneksi();
@@ -61,9 +59,6 @@ public class KelasDAO {
 
     }
 
-    // ===================================================
-    // TAMBAH KELAS
-    // ===================================================
     public boolean tambahKelas(Kelas kelas) {
         Connection con = Koneksi.getKoneksi();
 
@@ -119,9 +114,7 @@ public class KelasDAO {
 
         return daftarKelas;
     }
-    // ===================================================
-    // CARI BERDASARKAN ID
-    // ===================================================
+    
     public Kelas cariById(String idKelas) {
 
         Connection con = Koneksi.getKoneksi();
@@ -160,9 +153,6 @@ public class KelasDAO {
 
     }
 
-    // ===================================================
-    // UBAH HARGA
-    // ===================================================
     public boolean ubahHarga(String idKelas, Double hargaBaru) {
         Connection con = Koneksi.getKoneksi();
         try {
@@ -189,9 +179,6 @@ public class KelasDAO {
 
     }
 
-    // ===================================================
-    // GENERATE ID KELAS
-    // ===================================================
     public String generateId(String namaKelas){
         Connection conn = Koneksi.getKoneksi();
         String id = "";

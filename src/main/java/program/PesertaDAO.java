@@ -10,9 +10,6 @@ import javax.swing.JOptionPane;
 
 public class PesertaDAO {
 
-    // ==========================
-    // TAMPIL SEMUA PESERTA
-    // ==========================
     public String tampilSemuaPeserta() {
         Connection con = Koneksi.getKoneksi();
         StringBuilder hasil = new StringBuilder();
@@ -58,25 +55,23 @@ public class PesertaDAO {
 
     }
 
-    // ==========================
-    // TAMBAH PESERTA
-    // ==========================
     public boolean tambahPeserta(Peserta peserta) {
 
         Connection con = Koneksi.getKoneksi();
 
         if (con == null) {
-            JOptionPane.showMessageDialog(null, "Gagal terhubung ke database! Pastikan MySQL sudah menyala.", "Koneksi Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Gagal terhubung ke database! Pastikan MySQL sudah menyala.",
+                    "Koneksi Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
         try {
 
             String sql = """
-                         INSERT INTO peserta
-                         (id_peserta,nama_lengkap,nama_panggilan,no_hp)
-                         VALUES (?,?,?,?)
-                         """;
+                    INSERT INTO peserta
+                    (id_peserta,nama_lengkap,nama_panggilan,no_hp)
+                    VALUES (?,?,?,?)
+                    """;
 
             PreparedStatement ps = con.prepareStatement(sql);
 
@@ -84,13 +79,12 @@ public class PesertaDAO {
             ps.setString(2, peserta.getNamaLengkap());
             ps.setString(3, peserta.getNamaPanggilan());
             ps.setString(4, peserta.getNoHp());
-
             ps.executeUpdate();
-
             return true;
 
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Gagal menyimpan data peserta!", "Insert Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Gagal menyimpan data peserta!",
+                    "Insert Error", JOptionPane.ERROR_MESSAGE);
             System.out.println(e.getMessage());
             return false;
         }
@@ -100,7 +94,6 @@ public class PesertaDAO {
     public List<Peserta> ambilSemuaPesertaObjek() {
         List<Peserta> daftarPeserta = new ArrayList<>();
         Connection con = Koneksi.getKoneksi();
-
         try {
             String sql = "SELECT id_peserta, nama_lengkap, nama_panggilan, no_hp FROM peserta ORDER BY id_peserta";
             PreparedStatement ps = con.prepareStatement(sql);
@@ -111,20 +104,17 @@ public class PesertaDAO {
                         rs.getString("id_peserta"),
                         rs.getString("nama_lengkap"),
                         rs.getString("nama_panggilan"),
-                        rs.getString("no_hp")
-                ));
+                        rs.getString("no_hp")));
             }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Gagal mengambil daftar peserta!", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Gagal mengambil daftar peserta!",
+                    "Error", JOptionPane.ERROR_MESSAGE);
             System.out.println(e.getMessage());
         }
 
         return daftarPeserta;
     }
 
-    // ==========================
-    // CARI BERDASARKAN ID
-    // ==========================
     public Peserta cariById(String idPeserta) {
         Connection con = Koneksi.getKoneksi();
         Peserta peserta = null;
@@ -138,8 +128,7 @@ public class PesertaDAO {
                         rs.getString("id_peserta"),
                         rs.getString("nama_lengkap"),
                         rs.getString("nama_panggilan"),
-                        rs.getString("no_hp")
-                );
+                        rs.getString("no_hp"));
 
             }
 
@@ -153,9 +142,6 @@ public class PesertaDAO {
 
     }
 
-    // ==========================
-    // CARI BERDASARKAN NO HP
-    // ==========================
     public Peserta cariByNoHp(String noHp) {
 
         Connection con = Koneksi.getKoneksi();
@@ -179,8 +165,7 @@ public class PesertaDAO {
                         rs.getString("id_peserta"),
                         rs.getString("nama_lengkap"),
                         rs.getString("nama_panggilan"),
-                        rs.getString("no_hp")
-                );
+                        rs.getString("no_hp"));
 
             }
 
@@ -194,43 +179,25 @@ public class PesertaDAO {
 
     }
 
-    // ==========================
-    // GENERATE ID PESERTA
-    // ==========================
     public String generateIdPeserta() {
 
         Connection con = Koneksi.getKoneksi();
         String id = "P001";
         try {
-
             String sql = "SELECT MAX(id_peserta) AS max_id FROM peserta";
-
             PreparedStatement ps = con.prepareStatement(sql);
-
             ResultSet rs = ps.executeQuery();
-
             if (rs.next()) {
-
                 String maxId = rs.getString("max_id");
-
                 if (maxId != null) {
-
                     int angka = Integer.parseInt(maxId.substring(1));
                     angka++;
                     id = "P" + String.format("%03d", angka);
-
                 }
-
             }
-
         } catch (Exception e) {
-
             System.out.println(e.getMessage());
-
         }
-
         return id;
-
     }
-
 }

@@ -206,7 +206,7 @@ public class BookingUI {
             }
 
             String ringkasanTransaksi = dataTransaksi
-                    + "\n\nTotal Harga Masuk: Rp " + String.format("%,.0f", totalHargaMasuk);
+                    + "\n\nTotal Pendapatan: Rp " + String.format("%,.0f", totalHargaMasuk);
             tampilkanScroll(ringkasanTransaksi, "Data Transaksi");
         }
     }
@@ -226,7 +226,7 @@ public class BookingUI {
                 // }
             }
             String ringkasanRekap = dataTransaksi
-                    + "\n\nTotal Harga Masuk: Rp " + String.format("%,.0f", totalHargaMasuk);
+                    + "\n\nTotal Pendapatan: Rp " + String.format("%,.0f", totalHargaMasuk);
             tampilkanScroll(ringkasanRekap, "Data Rekap");
         }
     }

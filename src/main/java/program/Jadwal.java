@@ -8,7 +8,8 @@ public class Jadwal {
     private int sesi;
     private String status;
 
-    public Jadwal(String idJadwal, Kelas kelas, String tanggalMulai, String tanggalSelesai, int sesi) {
+    public Jadwal(String idJadwal, Kelas kelas, String tanggalMulai, 
+        String tanggalSelesai, int sesi) {
         this.idJadwal = idJadwal;
         this.kelas = kelas;
         this.tanggalMulai = tanggalMulai;

@@ -6,7 +6,8 @@ public class Peserta {
     private String namaPanggilan;
     private String noHp;
     
-    public Peserta(String idPeserta, String namaLengkap, String namaPanggilan, String noHp) {
+    public Peserta(String idPeserta, String namaLengkap, 
+        String namaPanggilan, String noHp) {
         this.idPeserta = idPeserta;
         this.namaLengkap = namaLengkap;
         this.namaPanggilan = namaPanggilan;
